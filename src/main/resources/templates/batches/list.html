@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Batches</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Class / Batch Management</h2>
+        <a href="/batches/new" class="btn btn-primary">Add Batch</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Batch Name</th>
+            <th>Level</th>
+            <th>Grade</th>
+            <th>Stream</th>
+            <th>Subject</th>
+            <th>Teacher</th>
+            <th>Fee</th>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="batch : ${batches}">
+            <td th:text="${batch.batchName}"></td>
+            <td th:text="${batch.educationLevel}"></td>
+            <td th:text="${batch.grade}"></td>
+            <td th:text="${batch.stream}"></td>
+            <td th:text="${batch.subject}"></td>
+            <td th:text="${batch.teacherName}"></td>
+            <td th:text="${batch.monthlyFee}"></td>
+            <td th:text="${batch.dayOfWeek}"></td>
+            <td>
+                <span th:text="${batch.startTime}"></span>
+                -
+                <span th:text="${batch.endTime}"></span>
+            </td>
+            <td th:text="${batch.status}"></td>
+            <td>
+                <a th:href="@{/batches/edit/{id}(id=${batch.id})}" class="btn btn-sm btn-warning">Edit</a>
+                <a th:href="@{/batches/delete/{id}(id=${batch.id})}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure?')">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="/students" class="btn btn-secondary">Students</a>
+
+</div>
+
+</body>
+</html>

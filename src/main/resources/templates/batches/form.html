@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Batch Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <h2>Batch Form</h2>
+
+    <form th:action="@{/batches/save}" th:object="${batch}" method="post">
+
+        <input type="hidden" th:field="*{id}">
+
+        <div class="mb-3">
+            <label class="form-label">Batch Name</label>
+            <input type="text" th:field="*{batchName}" class="form-control"
+                   placeholder="Example: O/L Grade 10 Mathematics - Sunday 8.00 AM" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Education Level</label>
+            <select th:field="*{educationLevel}" class="form-select" required>
+                <option value="">Select Level</option>
+                <option th:each="level : ${educationLevels}"
+                        th:value="${level}"
+                        th:text="${level}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Grade</label>
+            <select th:field="*{grade}" class="form-select" required>
+                <option value="">Select Grade</option>
+                <option th:each="grade : ${grades}"
+                        th:value="${grade}"
+                        th:text="${grade}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Stream</label>
+            <select th:field="*{stream}" class="form-select">
+                <option th:each="stream : ${streams}"
+                        th:value="${stream}"
+                        th:text="${stream}">
+                </option>
+            </select>
+            <small class="text-muted">Use NONE for O/L classes.</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" th:field="*{subject}" class="form-control"
+                   placeholder="Example: Mathematics, Science, ICT, Accounting" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Teacher Name</label>
+            <input type="text" th:field="*{teacherName}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Monthly Fee</label>
+            <input type="number" th:field="*{monthlyFee}" class="form-control" min="0" step="0.01" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Day</label>
+            <select th:field="*{dayOfWeek}" class="form-select">
+                <option value="">Select Day</option>
+                <option th:each="day : ${days}"
+                        th:value="${day}"
+                        th:text="${day}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Start Time</label>
+            <input type="time" th:field="*{startTime}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">End Time</label>
+            <input type="time" th:field="*{endTime}" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select th:field="*{status}" class="form-select">
+                <option th:each="status : ${statuses}"
+                        th:value="${status}"
+                        th:text="${status}">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Batch</button>
+        <a href="/batches" class="btn btn-secondary">Cancel</a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
