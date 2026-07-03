@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Attendance Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <h2>Attendance Report</h2>
+
+    <div class="alert alert-info">
+        <strong>Batch:</strong> <span th:text="${batch.batchName}"></span><br>
+        <strong>Date:</strong> <span th:text="${selectedDate}"></span>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Student Code</th>
+            <th>Student Name</th>
+            <th>Attendance Status</th>
+            <th>Marked At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="record : ${records}">
+            <td th:text="${record.enrollment.student.studentCode}"></td>
+            <td th:text="${record.enrollment.student.fullName}"></td>
+            <td th:text="${record.status}"></td>
+            <td th:text="${record.markedAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(records)}" class="alert alert-warning">
+        No attendance records found for this batch and date.
+    </div>
+
+    <a href="/attendance" class="btn btn-primary">Mark Another Attendance</a>
+    <a href="/enrollments" class="btn btn-secondary">Enrollments</a>
+
+</div>
+
+</body>
+</html>

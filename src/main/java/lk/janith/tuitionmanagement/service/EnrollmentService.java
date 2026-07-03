@@ -33,6 +33,10 @@ public class EnrollmentService {
         return enrollmentRepository.findAll();
     }
 
+    public List<Enrollment> getActiveEnrollmentsByBatchId(Long batchId) {
+        return enrollmentRepository.findByBatchIdAndStatus(batchId, EnrollmentStatus.ACTIVE);
+    }
+
     public Enrollment enrollStudent(Long studentId, Long batchId) {
 
         enrollmentRepository.findByStudentIdAndBatchId(studentId, batchId)
