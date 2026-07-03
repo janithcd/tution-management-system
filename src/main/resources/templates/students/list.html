@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Students</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Students</h2>
+        <a href="/students/new" class="btn btn-primary">Add Student</a>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Level</th>
+            <th>Grade</th>
+            <th>Stream</th>
+            <th>Phone</th>
+            <th>Parent Phone</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.studentCode}"></td>
+            <td th:text="${student.fullName}"></td>
+            <td th:text="${student.educationLevel}"></td>
+            <td th:text="${student.grade}"></td>
+            <td th:text="${student.stream}"></td>
+            <td th:text="${student.phone}"></td>
+            <td th:text="${student.parentPhone}"></td>
+            <td th:text="${student.status}"></td>
+            <td>
+                <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-sm btn-warning">Edit</a>
+                <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
