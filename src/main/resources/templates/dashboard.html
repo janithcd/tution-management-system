@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2>Tuition Management Dashboard</h2>
+        <p class="text-muted">Student, batch, attendance, and payment overview</p>
+    </div>
+
+    <div class="row g-3">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-primary">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Students</h6>
+                    <h3 th:text="${totalStudents}">0</h3>
+                    <a href="/students" class="btn btn-sm btn-primary">View Students</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">Active Students</h6>
+                    <h3 th:text="${activeStudents}">0</h3>
+                    <a href="/students" class="btn btn-sm btn-success">Manage Students</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-info">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Batches</h6>
+                    <h3 th:text="${totalBatches}">0</h3>
+                    <a href="/batches" class="btn btn-sm btn-info">View Batches</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-secondary">
+                <div class="card-body">
+                    <h6 class="text-muted">Active Batches</h6>
+                    <h3 th:text="${activeBatches}">0</h3>
+                    <a href="/batches" class="btn btn-sm btn-secondary">Manage Batches</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-dark">
+                <div class="card-body">
+                    <h6 class="text-muted">Active Enrollments</h6>
+                    <h3 th:text="${activeEnrollments}">0</h3>
+                    <a href="/enrollments" class="btn btn-sm btn-dark">View Enrollments</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-warning">
+                <div class="card-body">
+                    <h6 class="text-muted">Today Attendance</h6>
+                    <h3 th:text="${todayAttendanceCount}">0</h3>
+                    <a href="/attendance" class="btn btn-sm btn-warning">Mark Attendance</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-success">
+                <div class="card-body">
+                    <h6 class="text-muted">This Month Income</h6>
+                    <h3>
+                        Rs. <span th:text="${thisMonthIncome}">0</span>
+                    </h3>
+                    <a href="/payments" class="btn btn-sm btn-success">View Payments</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending Payments</h6>
+                    <h3 th:text="${pendingPayments}">0</h3>
+                    <a href="/payments/dues" class="btn btn-sm btn-danger">View Dues</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="my-4">
+
+    <div class="d-flex flex-wrap gap-2">
+        <a href="/students" class="btn btn-outline-primary">Students</a>
+        <a href="/batches" class="btn btn-outline-primary">Batches</a>
+        <a href="/enrollments" class="btn btn-outline-primary">Enrollments</a>
+        <a href="/attendance" class="btn btn-outline-primary">Attendance</a>
+        <a href="/payments" class="btn btn-outline-primary">Payments</a>
+        <a href="/payments/dues" class="btn btn-outline-warning">Payment Dues</a>
+    </div>
+
+</div>
+
+</body>
+</html>

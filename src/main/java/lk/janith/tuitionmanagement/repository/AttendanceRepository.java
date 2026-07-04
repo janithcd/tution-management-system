@@ -16,4 +16,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByEnrollmentBatchIdAndAttendanceDate(Long batchId, LocalDate attendanceDate);
 
     List<Attendance> findByEnrollmentStudentId(Long studentId);
+
+    long countByAttendanceDate(LocalDate attendanceDate);
 }

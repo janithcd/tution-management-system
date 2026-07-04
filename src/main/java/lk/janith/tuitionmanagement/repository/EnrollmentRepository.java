@@ -14,4 +14,8 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     List<Enrollment> findByBatchIdAndStatus(Long batchId, EnrollmentStatus status);
 
     List<Enrollment> findByStudentId(Long studentId);
+
+    List<Enrollment> findByStatus(EnrollmentStatus status);
+
+    long countByStatus(EnrollmentStatus status);
 }

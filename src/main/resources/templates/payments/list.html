@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h2>Payment Management</h2>
+        <div>
+            <a href="/payments/new" class="btn btn-primary">Add Payment</a>
+            <a href="/payments/dues" class="btn btn-warning">Payment Dues</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Student Code</th>
+            <th>Student Name</th>
+            <th>Batch</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Expected</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Payment Date</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.enrollment.student.studentCode}"></td>
+            <td th:text="${payment.enrollment.student.fullName}"></td>
+            <td th:text="${payment.enrollment.batch.batchName}"></td>
+            <td th:text="${payment.paymentMonth}"></td>
+            <td th:text="${payment.paymentYear}"></td>
+            <td th:text="${payment.expectedAmount}"></td>
+            <td th:text="${payment.paidAmount}"></td>
+            <td th:text="${payment.balanceAmount}"></td>
+            <td th:text="${payment.status}"></td>
+            <td th:text="${payment.paymentMethod}"></td>
+            <td th:text="${payment.paymentDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(payments)}" class="alert alert-warning">
+        No payments recorded yet.
+    </div>
+
+    <a href="/students" class="btn btn-secondary">Students</a>
+    <a href="/batches" class="btn btn-secondary">Batches</a>
+    <a href="/enrollments" class="btn btn-secondary">Enrollments</a>
+    <a href="/attendance" class="btn btn-secondary">Attendance</a>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment Dues</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+
+    <h2>Payment Dues Report</h2>
+
+    <form th:action="@{/payments/dues}" method="get" class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <label class="form-label">Month</label>
+            <select name="paymentMonth" class="form-select" required>
+                <option th:each="month : ${#numbers.sequence(1,12)}"
+                        th:value="${month}"
+                        th:text="${month}"
+                        th:selected="${month == selectedMonth}">
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Year</label>
+            <input type="number" name="paymentYear" class="form-control" th:value="${selectedYear}" required>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+
+    </form>
+
+    <div class="alert alert-info">
+        Showing payment status for:
+        <strong th:text="${selectedMonth}"></strong> /
+        <strong th:text="${selectedYear}"></strong>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Student Code</th>
+            <th>Student Name</th>
+            <th>Batch</th>
+            <th>Expected</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="due : ${dues}">
+            <td th:text="${due.enrollment.student.studentCode}"></td>
+            <td th:text="${due.enrollment.student.fullName}"></td>
+            <td th:text="${due.enrollment.batch.batchName}"></td>
+            <td th:text="${due.expectedAmount}"></td>
+            <td th:text="${due.paidAmount}"></td>
+            <td th:text="${due.balanceAmount}"></td>
+            <td th:text="${due.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(dues)}" class="alert alert-warning">
+        No active enrollments found.
+    </div>
+
+    <a href="/payments/new" class="btn btn-success">Add Payment</a>
+    <a href="/payments" class="btn btn-secondary">Back to Payments</a>
+
+</div>
+
+</body>
+</html>
