@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+
 <body>
 
-<div class="container mt-4">
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
 
     <div class="mb-4">
-        <h2>Tuition Management Dashboard</h2>
-        <p class="text-muted">Student, batch, attendance, and payment overview</p>
+        <h2 class="page-title">Dashboard</h2>
+        <p class="page-subtitle">Student, batch, attendance, payment, and income overview</p>
     </div>
 
-    <div class="row g-3">
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
 
         <div class="col-md-3">
             <div class="card shadow-sm border-primary">
@@ -79,9 +81,7 @@
             <div class="card shadow-sm border-success">
                 <div class="card-body">
                     <h6 class="text-muted">This Month Income</h6>
-                    <h3>
-                        Rs. <span th:text="${thisMonthIncome}">0</span>
-                    </h3>
+                    <h3>Rs. <span th:text="${thisMonthIncome}">0</span></h3>
                     <a href="/payments" class="btn btn-sm btn-success">View Payments</a>
                 </div>
             </div>
@@ -99,18 +99,115 @@
 
     </div>
 
-    <hr class="my-4">
+    <!-- Charts -->
+    <div class="row g-3">
 
-    <div class="d-flex flex-wrap gap-2">
-        <a href="/students" class="btn btn-outline-primary">Students</a>
-        <a href="/batches" class="btn btn-outline-primary">Batches</a>
-        <a href="/enrollments" class="btn btn-outline-primary">Enrollments</a>
-        <a href="/attendance" class="btn btn-outline-primary">Attendance</a>
-        <a href="/payments" class="btn btn-outline-primary">Payments</a>
-        <a href="/payments/dues" class="btn btn-outline-warning">Payment Dues</a>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Payment Status</h5>
+                    <p class="text-muted">Current month payment summary</p>
+                    <canvas id="paymentStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Monthly Income by Batch</h5>
+                    <p class="text-muted">Income collected from each batch this month</p>
+                    <canvas id="incomeByBatchChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Today Attendance</h5>
+                    <p class="text-muted">Present, absent, and late status today</p>
+                    <canvas id="attendanceStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
+
+<script th:inline="javascript">
+    const paymentStatusLabels = /*[[${paymentStatusLabels}]]*/ [];
+    const paymentStatusValues = /*[[${paymentStatusValues}]]*/ [];
+
+    const incomeBatchLabels = /*[[${incomeBatchLabels}]]*/ [];
+    const incomeBatchValues = /*[[${incomeBatchValues}]]*/ [];
+
+    const attendanceStatusLabels = /*[[${attendanceStatusLabels}]]*/ [];
+    const attendanceStatusValues = /*[[${attendanceStatusValues}]]*/ [];
+
+    new Chart(document.getElementById('paymentStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: paymentStatusLabels,
+            datasets: [{
+                label: 'Students',
+                data: paymentStatusValues
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('incomeByBatchChart'), {
+        type: 'bar',
+        data: {
+            labels: incomeBatchLabels,
+            datasets: [{
+                label: 'Income Rs.',
+                data: incomeBatchValues
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('attendanceStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: attendanceStatusLabels,
+            datasets: [{
+                label: 'Students',
+                data: attendanceStatusValues
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
