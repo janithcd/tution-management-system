@@ -3,6 +3,11 @@ package lk.janith.tuitionmanagement.service;
 import lk.janith.tuitionmanagement.entity.Student;
 import lk.janith.tuitionmanagement.repository.StudentRepository;
 import org.springframework.stereotype.Service;
+import lk.janith.tuitionmanagement.enums.EducationLevel;
+import lk.janith.tuitionmanagement.enums.Grade;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,5 +49,13 @@ public class StudentService {
     private String generateStudentCode() {
         long count = studentRepository.count() + 1;
         return String.format("STU%04d", count);
+    }
+    public Page<Student> searchStudents(
+            String keyword,
+            EducationLevel educationLevel,
+            Grade grade,
+            Pageable pageable
+    ) {
+        return studentRepository.searchStudents(keyword, educationLevel, grade, pageable);
     }
 }

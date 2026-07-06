@@ -1,15 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Batches')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between mb-3">
-        <h2>Class / Batch Management</h2>
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h2 class="page-title">Class / Batch Management</h2>
+            <p class="page-subtitle">Manage O/L and A/L class batches</p>
+        </div>
+
         <a href="/batches/new" class="btn btn-primary">Add Batch</a>
     </div>
 
+    <!-- Search and Filter Form -->
+    <div class="form-card mb-4">
+
+        <form th:action="@{/batches}" method="get" class="row g-3">
+
+            <input type="hidden" name="page" value="0">
+
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <input type="text"
+                       name="keyword"
+                       class="form-control"
+                       placeholder="Batch, subject, teacher"
+                       th:value="${keyword}">
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Level</label>
+                <select name="educationLevel" class="form-select">
+                    <option value="">All Levels</option>
+                    <option th:each="level : ${educationLevels}"
+                            th:value="${level}"
+                            th:text="${level}"
+                            th:selected="${selectedEducationLevel == level.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Grade</label>
+                <select name="grade" class="form-select">
+                    <option value="">All Grades</option>
+                    <option th:each="grade : ${grades}"
+                            th:value="${grade}"
+                            th:text="${grade}"
+                            th:selected="${selectedGrade == grade.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Stream</label>
+                <select name="stream" class="form-select">
+                    <option value="">All Streams</option>
+                    <option th:each="stream : ${streams}"
+                            th:value="${stream}"
+                            th:text="${stream}"
+                            th:selected="${selectedStream == stream.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-1">
+                <label class="form-label">Size</label>
+                <select name="size" class="form-select">
+                    <option value="5" th:selected="${pageSize == 5}">5</option>
+                    <option value="10" th:selected="${pageSize == 10}">10</option>
+                    <option value="20" th:selected="${pageSize == 20}">20</option>
+                    <option value="50" th:selected="${pageSize == 50}">50</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/batches" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Batch Table -->
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
@@ -44,7 +126,11 @@
             </td>
             <td th:text="${batch.status}"></td>
             <td>
-                <a th:href="@{/batches/edit/{id}(id=${batch.id})}" class="btn btn-sm btn-warning">Edit</a>
+                <a th:href="@{/batches/edit/{id}(id=${batch.id})}"
+                   class="btn btn-sm btn-warning">
+                    Edit
+                </a>
+
                 <a th:href="@{/batches/delete/{id}(id=${batch.id})}"
                    class="btn btn-sm btn-danger"
                    onclick="return confirm('Are you sure?')">
@@ -55,7 +141,71 @@
         </tbody>
     </table>
 
-    <a href="/students" class="btn btn-secondary">Students</a>
+    <div th:if="${#lists.isEmpty(batches)}" class="alert alert-warning">
+        No batches found.
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/batches(
+                        page=${currentPage - 1},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        educationLevel=${selectedEducationLevel},
+                        grade=${selectedGrade},
+                        stream=${selectedStream}
+                   )}">
+                    Previous
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+
+                <a class="page-link"
+                   th:href="@{/batches(
+                        page=${i},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        educationLevel=${selectedEducationLevel},
+                        grade=${selectedGrade},
+                        stream=${selectedStream}
+                   )}"
+                   th:text="${i + 1}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/batches(
+                        page=${currentPage + 1},
+                        size=${pageSize},
+                        keyword=${keyword},
+                        educationLevel=${selectedEducationLevel},
+                        grade=${selectedGrade},
+                        stream=${selectedStream}
+                   )}">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+    <div class="text-center text-muted mt-2" th:if="${totalItems > 0}">
+        Showing page
+        <span th:text="${currentPage + 1}"></span>
+        of
+        <span th:text="${totalPages}"></span>
+        |
+        Total batches:
+        <span th:text="${totalItems}"></span>
+    </div>
 
 </div>
 

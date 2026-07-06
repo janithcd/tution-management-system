@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Monthly Income Report')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2 class="page-title">Monthly Income Report</h2>
+        <p class="page-subtitle">Filter payments by month and year</p>
+    </div>
+
+    <div class="form-card mb-4">
+        <form th:action="@{/reports/monthly-income}" method="get" class="row g-3">
+
+            <div class="col-md-4">
+                <label class="form-label">Month</label>
+                <select name="month" class="form-select" required>
+                    <option th:each="m : ${#numbers.sequence(1,12)}"
+                            th:value="${m}"
+                            th:text="${m}"
+                            th:selected="${m == selectedMonth}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Year</label>
+                <input type="number" name="year" class="form-control" th:value="${selectedYear}" required>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="alert alert-success">
+        <strong>Total Income:</strong>
+        Rs. <span th:text="${totalIncome}">0</span>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Student Code</th>
+            <th>Student Name</th>
+            <th>Batch</th>
+            <th>Expected</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Payment Date</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.enrollment.student.studentCode}"></td>
+            <td th:text="${payment.enrollment.student.fullName}"></td>
+            <td th:text="${payment.enrollment.batch.batchName}"></td>
+            <td th:text="${payment.expectedAmount}"></td>
+            <td th:text="${payment.paidAmount}"></td>
+            <td th:text="${payment.balanceAmount}"></td>
+            <td th:text="${payment.status}"></td>
+            <td th:text="${payment.paymentMethod}"></td>
+            <td th:text="${payment.paymentDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(payments)}" class="alert alert-warning">
+        No payments found for this month.
+    </div>
+
+</div>
+
+</body>
+</html>

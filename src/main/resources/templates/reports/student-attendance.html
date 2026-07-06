@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Student Attendance History')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2 class="page-title">Student Attendance History</h2>
+        <p class="page-subtitle">Select a student and view attendance records</p>
+    </div>
+
+    <div class="form-card mb-4">
+        <form th:action="@{/reports/student-attendance}" method="get" class="row g-3">
+
+            <div class="col-md-8">
+                <label class="form-label">Student</label>
+                <select name="studentId" class="form-select" required>
+                    <option value="">Select Student</option>
+                    <option th:each="student : ${students}"
+                            th:value="${student.id}"
+                            th:text="${student.studentCode + ' - ' + student.fullName}"
+                            th:selected="${student.id == selectedStudentId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">View Attendance</button>
+            </div>
+
+        </form>
+    </div>
+
+    <table class="table table-bordered table-striped" th:if="${attendanceRecords != null}">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Batch</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Marked At</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="record : ${attendanceRecords}">
+            <td th:text="${record.attendanceDate}"></td>
+            <td th:text="${record.enrollment.batch.batchName}"></td>
+            <td th:text="${record.enrollment.batch.subject}"></td>
+            <td th:text="${record.status}"></td>
+            <td th:text="${record.markedAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${attendanceRecords != null and #lists.isEmpty(attendanceRecords)}" class="alert alert-warning">
+        No attendance records found for this student.
+    </div>
+
+</div>
+
+</body>
+</html>

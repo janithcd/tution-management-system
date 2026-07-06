@@ -10,6 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.time.DayOfWeek;
 
 @Controller
@@ -23,8 +27,58 @@ public class BatchController {
     }
 
     @GetMapping
-    public String listBatches(Model model) {
-        model.addAttribute("batches", batchService.getAllBatches());
+    public String listBatches(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String educationLevel,
+            @RequestParam(required = false) String grade,
+            @RequestParam(required = false) String stream,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        EducationLevel selectedLevel = null;
+        Grade selectedGrade = null;
+        StreamType selectedStream = null;
+
+        if (educationLevel != null && !educationLevel.isBlank()) {
+            selectedLevel = EducationLevel.valueOf(educationLevel);
+        }
+
+        if (grade != null && !grade.isBlank()) {
+            selectedGrade = Grade.valueOf(grade);
+        }
+
+        if (stream != null && !stream.isBlank()) {
+            selectedStream = StreamType.valueOf(stream);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Batch> batchPage = batchService.searchBatches(
+                keyword,
+                selectedLevel,
+                selectedGrade,
+                selectedStream,
+                pageable
+        );
+
+        model.addAttribute("batches", batchPage.getContent());
+        model.addAttribute("batchPage", batchPage);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedEducationLevel", educationLevel);
+        model.addAttribute("selectedGrade", grade);
+        model.addAttribute("selectedStream", stream);
+
+        model.addAttribute("educationLevels", EducationLevel.values());
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("streams", StreamType.values());
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", batchPage.getTotalPages());
+        model.addAttribute("totalItems", batchPage.getTotalElements());
+
         return "batches/list";
     }
 

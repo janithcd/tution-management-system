@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Reports')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+  <div class="mb-4">
+    <h2 class="page-title">Reports</h2>
+    <p class="page-subtitle">View income, payment, and attendance reports</p>
+  </div>
+
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5>Monthly Income Report</h5>
+          <p class="text-muted">View all payments and total income for a selected month.</p>
+          <a href="/reports/monthly-income" class="btn btn-primary">Open Report</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5>Student Payment History</h5>
+          <p class="text-muted">Check all payment records of a selected student.</p>
+          <a href="/reports/student-payments" class="btn btn-success">Open Report</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5>Student Attendance History</h5>
+          <p class="text-muted">Check attendance records of a selected student.</p>
+          <a href="/reports/student-attendance" class="btn btn-warning">Open Report</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

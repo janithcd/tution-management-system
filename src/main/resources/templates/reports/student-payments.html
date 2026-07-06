@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Student Payment History')}"></head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2 class="page-title">Student Payment History</h2>
+        <p class="page-subtitle">Select a student and view all payment records</p>
+    </div>
+
+    <div class="form-card mb-4">
+        <form th:action="@{/reports/student-payments}" method="get" class="row g-3">
+
+            <div class="col-md-8">
+                <label class="form-label">Student</label>
+                <select name="studentId" class="form-select" required>
+                    <option value="">Select Student</option>
+                    <option th:each="student : ${students}"
+                            th:value="${student.id}"
+                            th:text="${student.studentCode + ' - ' + student.fullName}"
+                            th:selected="${student.id == selectedStudentId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">View History</button>
+            </div>
+
+        </form>
+    </div>
+
+    <table class="table table-bordered table-striped" th:if="${payments != null}">
+        <thead>
+        <tr>
+            <th>Batch</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Expected</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Payment Date</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="payment : ${payments}">
+            <td th:text="${payment.enrollment.batch.batchName}"></td>
+            <td th:text="${payment.paymentMonth}"></td>
+            <td th:text="${payment.paymentYear}"></td>
+            <td th:text="${payment.expectedAmount}"></td>
+            <td th:text="${payment.paidAmount}"></td>
+            <td th:text="${payment.balanceAmount}"></td>
+            <td th:text="${payment.status}"></td>
+            <td th:text="${payment.paymentMethod}"></td>
+            <td th:text="${payment.paymentDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${payments != null and #lists.isEmpty(payments)}" class="alert alert-warning">
+        No payment records found for this student.
+    </div>
+
+</div>
+
+</body>
+</html>
