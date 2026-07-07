@@ -38,6 +38,10 @@ public class PaymentService {
                 .filter(due -> due.getStatus() != PaymentStatus.PAID)
                 .count();
     }
+    public Payment getPaymentById(Long id) {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+    }
     public PaymentService(
             PaymentRepository paymentRepository,
             EnrollmentRepository enrollmentRepository
