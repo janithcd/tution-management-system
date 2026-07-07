@@ -11,6 +11,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import lk.janith.tuitionmanagement.entity.Enrollment;
+import lk.janith.tuitionmanagement.enums.EducationLevel;
+import lk.janith.tuitionmanagement.enums.EnrollmentStatus;
+import lk.janith.tuitionmanagement.enums.Grade;
+import lk.janith.tuitionmanagement.enums.StreamType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/enrollments")
@@ -32,16 +41,60 @@ public class EnrollmentController {
 
     @GetMapping
     public String listEnrollments(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String educationLevel,
+            @RequestParam(required = false) String grade,
+            @RequestParam(required = false) String stream,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model
     ) {
+        EducationLevel selectedLevel = null;
+        Grade selectedGrade = null;
+        StreamType selectedStream = null;
+        EnrollmentStatus selectedStatus = null;
+
+        if (educationLevel != null && !educationLevel.isBlank()) {
+            selectedLevel = EducationLevel.valueOf(educationLevel);
+        }
+
+        if (grade != null && !grade.isBlank()) {
+            selectedGrade = Grade.valueOf(grade);
+        }
+
+        if (stream != null && !stream.isBlank()) {
+            selectedStream = StreamType.valueOf(stream);
+        }
+
+        if (status != null && !status.isBlank()) {
+            selectedStatus = EnrollmentStatus.valueOf(status);
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<Enrollment> enrollmentPage = enrollmentService.getEnrollmentPage(pageable);
+        Page<Enrollment> enrollmentPage = enrollmentService.searchEnrollments(
+                keyword,
+                selectedLevel,
+                selectedGrade,
+                selectedStream,
+                selectedStatus,
+                pageable
+        );
 
         model.addAttribute("enrollments", enrollmentPage.getContent());
         model.addAttribute("enrollmentPage", enrollmentPage);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedEducationLevel", educationLevel);
+        model.addAttribute("selectedGrade", grade);
+        model.addAttribute("selectedStream", stream);
+        model.addAttribute("selectedStatus", status);
+
+        model.addAttribute("educationLevels", EducationLevel.values());
+        model.addAttribute("grades", Grade.values());
+        model.addAttribute("streams", StreamType.values());
+        model.addAttribute("statuses", EnrollmentStatus.values());
 
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);

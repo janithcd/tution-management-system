@@ -12,6 +12,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
+import lk.janith.tuitionmanagement.enums.EducationLevel;
+import lk.janith.tuitionmanagement.enums.Grade;
+import lk.janith.tuitionmanagement.enums.StreamType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class EnrollmentService {
@@ -20,6 +25,23 @@ public class EnrollmentService {
     private final StudentRepository studentRepository;
     private final BatchRepository batchRepository;
 
+    public Page<Enrollment> searchEnrollments(
+            String keyword,
+            EducationLevel educationLevel,
+            Grade grade,
+            StreamType stream,
+            EnrollmentStatus status,
+            Pageable pageable
+    ) {
+        return enrollmentRepository.searchEnrollments(
+                keyword,
+                educationLevel,
+                grade,
+                stream,
+                status,
+                pageable
+        );
+    }
     public EnrollmentService(
             EnrollmentRepository enrollmentRepository,
             StudentRepository studentRepository,
