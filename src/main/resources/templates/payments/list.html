@@ -13,6 +13,24 @@
         </div>
     </div>
 
+    <form th:action="@{/payments}" method="get" class="row g-3 mb-4">
+        <div class="col-md-2">
+            <label class="form-label">Page Size</label>
+            <select name="size" class="form-select">
+                <option value="5" th:selected="${pageSize == 5}">5</option>
+                <option value="10" th:selected="${pageSize == 10}">10</option>
+                <option value="20" th:selected="${pageSize == 20}">20</option>
+                <option value="50" th:selected="${pageSize == 50}">50</option>
+            </select>
+        </div>
+
+        <input type="hidden" name="page" value="0">
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </form>
+
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
@@ -54,6 +72,46 @@
         </tr>
         </tbody>
     </table>
+
+    <nav th:if="${totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/payments(page=${currentPage - 1}, size=${pageSize})}">
+                    Previous
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${i == currentPage} ? 'active'">
+
+                <a class="page-link"
+                   th:href="@{/payments(page=${i}, size=${pageSize})}"
+                   th:text="${i + 1}">
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/payments(page=${currentPage + 1}, size=${pageSize})}">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+    <div class="text-center text-muted mt-2" th:if="${totalItems > 0}">
+        Showing page
+        <span th:text="${currentPage + 1}"></span>
+        of
+        <span th:text="${totalPages}"></span>
+        |
+        Total payments:
+        <span th:text="${totalItems}"></span>
+    </div>
 
     <div th:if="${#lists.isEmpty(payments)}" class="alert alert-warning">
         No payments recorded yet.

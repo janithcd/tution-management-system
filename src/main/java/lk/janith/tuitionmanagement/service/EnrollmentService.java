@@ -8,7 +8,8 @@ import lk.janith.tuitionmanagement.repository.BatchRepository;
 import lk.janith.tuitionmanagement.repository.EnrollmentRepository;
 import lk.janith.tuitionmanagement.repository.StudentRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class EnrollmentService {
         this.batchRepository = batchRepository;
     }
 
+    public Page<Enrollment> getEnrollmentPage(Pageable pageable) {
+        return enrollmentRepository.findAll(pageable);
+    }
     public List<Enrollment> getAllEnrollments() {
         return enrollmentRepository.findAll();
     }

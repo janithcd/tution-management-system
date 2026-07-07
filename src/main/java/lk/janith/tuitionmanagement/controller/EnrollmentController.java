@@ -6,6 +6,11 @@ import lk.janith.tuitionmanagement.service.StudentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import lk.janith.tuitionmanagement.entity.Enrollment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/enrollments")
@@ -26,8 +31,23 @@ public class EnrollmentController {
     }
 
     @GetMapping
-    public String listEnrollments(Model model) {
-        model.addAttribute("enrollments", enrollmentService.getAllEnrollments());
+    public String listEnrollments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<Enrollment> enrollmentPage = enrollmentService.getEnrollmentPage(pageable);
+
+        model.addAttribute("enrollments", enrollmentPage.getContent());
+        model.addAttribute("enrollmentPage", enrollmentPage);
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", enrollmentPage.getTotalPages());
+        model.addAttribute("totalItems", enrollmentPage.getTotalElements());
+
         return "enrollments/list";
     }
 

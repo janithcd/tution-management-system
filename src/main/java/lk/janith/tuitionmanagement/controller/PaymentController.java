@@ -11,6 +11,11 @@ import lk.janith.tuitionmanagement.entity.Payment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import lk.janith.tuitionmanagement.entity.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,8 +53,23 @@ public class PaymentController {
                 .body(pdfBytes);
     }
     @GetMapping
-    public String listPayments(Model model) {
-        model.addAttribute("payments", paymentService.getAllPayments());
+    public String listPayments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+        Page<Payment> paymentPage = paymentService.getPaymentPage(pageable);
+
+        model.addAttribute("payments", paymentPage.getContent());
+        model.addAttribute("paymentPage", paymentPage);
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", paymentPage.getTotalPages());
+        model.addAttribute("totalItems", paymentPage.getTotalElements());
+
         return "payments/list";
     }
 
