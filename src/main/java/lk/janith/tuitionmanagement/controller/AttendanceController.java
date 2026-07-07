@@ -6,6 +6,12 @@ import lk.janith.tuitionmanagement.service.BatchService;
 import lk.janith.tuitionmanagement.service.EnrollmentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
+import lk.janith.tuitionmanagement.entity.Attendance;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,6 +34,67 @@ public class AttendanceController {
         this.attendanceService = attendanceService;
         this.batchService = batchService;
         this.enrollmentService = enrollmentService;
+    }
+    @GetMapping("/records")
+    public String showAttendanceRecords(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long batchId,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model
+    ) {
+        LocalDate selectedFromDate = null;
+        LocalDate selectedToDate = null;
+        AttendanceStatus selectedStatus = null;
+
+        if (fromDate != null && !fromDate.isBlank()) {
+            selectedFromDate = LocalDate.parse(fromDate);
+        }
+
+        if (toDate != null && !toDate.isBlank()) {
+            selectedToDate = LocalDate.parse(toDate);
+        }
+
+        if (status != null && !status.isBlank()) {
+            selectedStatus = AttendanceStatus.valueOf(status);
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "attendanceDate", "id")
+        );
+
+        Page<Attendance> attendancePage = attendanceService.searchAttendanceRecords(
+                keyword,
+                batchId,
+                selectedFromDate,
+                selectedToDate,
+                selectedStatus,
+                pageable
+        );
+
+        model.addAttribute("records", attendancePage.getContent());
+        model.addAttribute("attendancePage", attendancePage);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedBatchId", batchId);
+        model.addAttribute("selectedFromDate", fromDate);
+        model.addAttribute("selectedToDate", toDate);
+        model.addAttribute("selectedStatus", status);
+
+        model.addAttribute("batches", batchService.getAllBatches());
+        model.addAttribute("statuses", AttendanceStatus.values());
+
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", attendancePage.getTotalPages());
+        model.addAttribute("totalItems", attendancePage.getTotalElements());
+
+        return "attendance/records";
     }
 
     @GetMapping

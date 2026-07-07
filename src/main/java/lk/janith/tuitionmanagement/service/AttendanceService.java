@@ -5,7 +5,11 @@ import lk.janith.tuitionmanagement.entity.Enrollment;
 import lk.janith.tuitionmanagement.enums.AttendanceStatus;
 import lk.janith.tuitionmanagement.repository.AttendanceRepository;
 import lk.janith.tuitionmanagement.repository.EnrollmentRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.domain.Pageable;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +29,23 @@ public class AttendanceService {
         this.enrollmentRepository = enrollmentRepository;
     }
 
+    public Page<Attendance> searchAttendanceRecords(
+            String keyword,
+            Long batchId,
+            LocalDate fromDate,
+            LocalDate toDate,
+            AttendanceStatus status,
+            Pageable pageable
+    ) {
+        return attendanceRepository.searchAttendanceRecords(
+                keyword,
+                batchId,
+                fromDate,
+                toDate,
+                status,
+                pageable
+        );
+    }
     public void saveAttendance(Long enrollmentId, LocalDate attendanceDate, AttendanceStatus status) {
 
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
