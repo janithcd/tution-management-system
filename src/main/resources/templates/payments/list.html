@@ -30,6 +30,74 @@
             <button type="submit" class="btn btn-primary">Apply</button>
         </div>
     </form>
+    <div class="form-card mb-4">
+
+        <form th:action="@{/payments}" method="get" class="row g-3">
+
+            <input type="hidden" name="page" value="0">
+
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <input type="text"
+                       name="keyword"
+                       class="form-control"
+                       placeholder="Student code, name, batch"
+                       th:value="${keyword}">
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Month</label>
+                <select name="paymentMonth" class="form-select">
+                    <option value="">All Months</option>
+                    <option th:each="month : ${#numbers.sequence(1,12)}"
+                            th:value="${month}"
+                            th:text="${month}"
+                            th:selected="${selectedPaymentMonth == month}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Year</label>
+                <input type="number"
+                       name="paymentYear"
+                       class="form-control"
+                       placeholder="2026"
+                       th:value="${selectedPaymentYear}">
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option th:each="status : ${paymentStatuses}"
+                            th:value="${status}"
+                            th:text="${status}"
+                            th:selected="${selectedStatus == status.name()}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-1">
+                <label class="form-label">Size</label>
+                <select name="size" class="form-select">
+                    <option value="5" th:selected="${pageSize == 5}">5</option>
+                    <option value="10" th:selected="${pageSize == 10}">10</option>
+                    <option value="20" th:selected="${pageSize == 20}">20</option>
+                    <option value="50" th:selected="${pageSize == 50}">50</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="/payments" class="btn btn-secondary">Reset</a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 
     <table class="table table-bordered table-striped">
         <thead>
@@ -78,7 +146,14 @@
 
             <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/payments(page=${currentPage - 1}, size=${pageSize})}">
+                   th:href="@{/payments(
+                    page=${currentPage - 1},
+                    size=${pageSize},
+                    keyword=${keyword},
+                    paymentMonth=${selectedPaymentMonth},
+                    paymentYear=${selectedPaymentYear},
+                    status=${selectedStatus}
+               )}">
                     Previous
                 </a>
             </li>
@@ -88,14 +163,28 @@
                 th:classappend="${i == currentPage} ? 'active'">
 
                 <a class="page-link"
-                   th:href="@{/payments(page=${i}, size=${pageSize})}"
+                   th:href="@{/payments(
+                    page=${i},
+                    size=${pageSize},
+                    keyword=${keyword},
+                    paymentMonth=${selectedPaymentMonth},
+                    paymentYear=${selectedPaymentYear},
+                    status=${selectedStatus}
+               )}"
                    th:text="${i + 1}">
                 </a>
             </li>
 
             <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/payments(page=${currentPage + 1}, size=${pageSize})}">
+                   th:href="@{/payments(
+                    page=${currentPage + 1},
+                    size=${pageSize},
+                    keyword=${keyword},
+                    paymentMonth=${selectedPaymentMonth},
+                    paymentYear=${selectedPaymentYear},
+                    status=${selectedStatus}
+               )}">
                     Next
                 </a>
             </li>

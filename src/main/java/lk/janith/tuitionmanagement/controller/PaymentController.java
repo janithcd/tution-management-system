@@ -16,6 +16,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import lk.janith.tuitionmanagement.entity.Payment;
+import lk.janith.tuitionmanagement.enums.PaymentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,16 +60,38 @@ public class PaymentController {
     }
     @GetMapping
     public String listPayments(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Integer paymentMonth,
+            @RequestParam(required = false) Integer paymentYear,
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             Model model
     ) {
+        PaymentStatus selectedStatus = null;
+
+        if (status != null && !status.isBlank()) {
+            selectedStatus = PaymentStatus.valueOf(status);
+        }
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
-        Page<Payment> paymentPage = paymentService.getPaymentPage(pageable);
+        Page<Payment> paymentPage = paymentService.searchPayments(
+                keyword,
+                paymentMonth,
+                paymentYear,
+                selectedStatus,
+                pageable
+        );
 
         model.addAttribute("payments", paymentPage.getContent());
         model.addAttribute("paymentPage", paymentPage);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("selectedPaymentMonth", paymentMonth);
+        model.addAttribute("selectedPaymentYear", paymentYear);
+        model.addAttribute("selectedStatus", status);
+        model.addAttribute("paymentStatuses", PaymentStatus.values());
 
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);

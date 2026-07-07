@@ -14,6 +14,9 @@ import lk.janith.tuitionmanagement.entity.Payment;
 import lk.janith.tuitionmanagement.enums.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import lk.janith.tuitionmanagement.enums.PaymentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,6 +37,15 @@ public class PaymentService {
     }
     public Page<Payment> getPaymentPage(Pageable pageable) {
         return paymentRepository.findAll(pageable);
+    }
+    public Page<Payment> searchPayments(
+            String keyword,
+            Integer paymentMonth,
+            Integer paymentYear,
+            PaymentStatus status,
+            Pageable pageable
+    ) {
+        return paymentRepository.searchPayments(keyword, paymentMonth, paymentYear, status, pageable);
     }
     public long getPendingPaymentCount(Integer paymentMonth, Integer paymentYear) {
 
