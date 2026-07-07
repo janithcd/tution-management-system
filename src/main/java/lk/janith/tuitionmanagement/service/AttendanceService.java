@@ -28,7 +28,21 @@ public class AttendanceService {
         this.attendanceRepository = attendanceRepository;
         this.enrollmentRepository = enrollmentRepository;
     }
-
+    public List<Attendance> searchAttendanceRecordsForExport(
+            String keyword,
+            Long batchId,
+            LocalDate fromDate,
+            LocalDate toDate,
+            AttendanceStatus status
+    ) {
+        return attendanceRepository.searchAttendanceRecordsForExport(
+                keyword,
+                batchId,
+                fromDate,
+                toDate,
+                status
+        );
+    }
     public Page<Attendance> searchAttendanceRecords(
             String keyword,
             Long batchId,

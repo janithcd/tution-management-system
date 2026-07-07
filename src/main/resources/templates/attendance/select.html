@@ -1,37 +1,105 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Select Attendance')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Attendance Management</h2>
+<div class="container page-shell">
 
-    <form th:action="@{/attendance/mark}" method="get" class="mt-4">
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Mark Attendance</h2>
+                <p class="page-subtitle">
+                    Select a class batch and date to mark student attendance.
+                </p>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Select Batch</label>
-            <select name="batchId" class="form-select" required>
-                <option value="">Select Batch</option>
-                <option th:each="batch : ${batches}"
-                        th:value="${batch.id}"
-                        th:text="${batch.batchName + ' - ' + batch.subject}">
-                </option>
-            </select>
+            <a href="/attendance/records" class="btn btn-soft">
+                <i class="bi bi-clipboard-data"></i>
+                Attendance Records
+            </a>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Attendance Date</label>
-            <input type="date" name="date" class="form-control" th:value="${selectedDate}" required>
-        </div>
+    <!-- Select Attendance Form -->
+    <div class="form-card">
 
-        <button type="submit" class="btn btn-primary">Continue</button>
+        <form th:action="@{/attendance/mark}" method="get" class="row g-4">
 
-        <a href="/students" class="btn btn-secondary">Students</a>
-        <a href="/batches" class="btn btn-secondary">Batches</a>
-        <a href="/enrollments" class="btn btn-secondary">Enrollments</a>
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-calendar-check me-2"></i>
+                    Attendance Selection
+                </h5>
+            </div>
 
-    </form>
+            <div class="col-lg-8 col-md-12">
+                <label class="form-label">Select Batch</label>
+                <select name="batchId" class="form-select" required>
+                    <option value="">Choose a batch</option>
+
+                    <option th:each="batch : ${batches}"
+                            th:value="${batch.id}"
+                            th:text="${batch.batchName + ' | ' + batch.subject + ' | ' + batch.dayOfWeek + ' ' + batch.startTime + ' - ' + batch.endTime}">
+                    </option>
+                </select>
+
+                <div class="small-muted mt-2">
+                    Select the class batch you want to mark attendance for.
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <label class="form-label">Attendance Date</label>
+                <input type="date"
+                       name="attendanceDate"
+                       class="form-control"
+                       th:value="${today}"
+                       required>
+
+                <div class="small-muted mt-2">
+                    Default date is today.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-bold mb-1">Attendance Rule</div>
+                        <div class="small-muted">
+                            Attendance is marked for active enrollments only. If attendance already exists for the same
+                            student and date, the system will update the existing record instead of creating a duplicate.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-circle"></i>
+                        Continue
+                    </button>
+
+                    <a href="/dashboard" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

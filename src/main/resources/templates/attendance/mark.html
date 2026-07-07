@@ -1,72 +1,210 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Mark Attendance')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container mt-4">
+<div class="container page-shell">
 
-    <h2>Mark Attendance</h2>
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Mark Attendance</h2>
+                <p class="page-subtitle">
+                    Mark attendance for enrolled students in the selected batch.
+                </p>
+            </div>
 
-    <div class="alert alert-info">
-        <strong>Batch:</strong> <span th:text="${batch.batchName}"></span><br>
-        <strong>Date:</strong> <span th:text="${selectedDate}"></span>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/attendance" class="btn btn-soft">
+                    <i class="bi bi-arrow-left"></i>
+                    Change Batch
+                </a>
+
+                <a href="/attendance/records" class="btn btn-success">
+                    <i class="bi bi-clipboard-data"></i>
+                    Records
+                </a>
+            </div>
+        </div>
     </div>
 
+    <!-- Attendance Info -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-journal-bookmark"></i>
+                </div>
+                <div class="stat-label">Selected Batch ID</div>
+                <div class="stat-value" th:text="${batchId}">0</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div class="stat-label">Attendance Date</div>
+                <div class="stat-value fs-3" th:text="${attendanceDate}">Date</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-label">Students to Mark</div>
+                <div class="stat-value" th:text="${#lists.size(enrollments)}">0</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Attendance Form -->
     <form th:action="@{/attendance/save}" method="post">
 
         <input type="hidden" name="batchId" th:value="${batchId}">
-        <input type="hidden" name="attendanceDate" th:value="${selectedDate}">
+        <input type="hidden" name="attendanceDate" th:value="${attendanceDate}">
 
-        <table class="table table-bordered table-striped">
-            <thead>
-            <tr>
-                <th>Student Code</th>
-                <th>Student Name</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Late</th>
-            </tr>
-            </thead>
+        <div class="table-card">
 
-            <tbody>
-            <tr th:each="enrollment : ${enrollments}">
-                <td th:text="${enrollment.student.studentCode}"></td>
-                <td th:text="${enrollment.student.fullName}"></td>
+            <div class="table-card-header">
+                <div>
+                    <h5 class="mb-1 fw-bold">Student Attendance List</h5>
+                    <p class="small-muted mb-0">
+                        Choose PRESENT, ABSENT, or LATE for each student.
+                    </p>
+                </div>
 
-                <input type="hidden" name="enrollmentIds" th:value="${enrollment.id}">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Save Attendance
+                    </button>
+                </div>
+            </div>
 
-                <td>
-                    <input type="radio"
-                           th:name="${'status_' + enrollment.id}"
-                           value="PRESENT"
-                           checked>
-                </td>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Batch</th>
+                        <th>Subject</th>
+                        <th>Current Status</th>
+                        <th>Mark Attendance</th>
+                    </tr>
+                    </thead>
 
-                <td>
-                    <input type="radio"
-                           th:name="${'status_' + enrollment.id}"
-                           value="ABSENT">
-                </td>
+                    <tbody>
+                    <tr th:each="enrollment : ${enrollments}">
 
-                <td>
-                    <input type="radio"
-                           th:name="${'status_' + enrollment.id}"
-                           value="LATE">
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                        <td>
+                            <div class="fw-bold" th:text="${enrollment.student.fullName}"></div>
+                            <div class="small-muted" th:text="${enrollment.student.studentCode}"></div>
+                        </td>
 
-        <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-warning">
-            No active students enrolled in this batch.
+                        <td>
+                            <div class="fw-semibold" th:text="${enrollment.batch.batchName}"></div>
+                            <div class="small-muted">
+                                <span th:text="${enrollment.batch.dayOfWeek}"></span>
+                                |
+                                <span th:text="${enrollment.batch.startTime}"></span>
+                                -
+                                <span th:text="${enrollment.batch.endTime}"></span>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="fw-semibold" th:text="${enrollment.batch.subject}"></span>
+                        </td>
+
+                        <td>
+                            <span th:if="${attendanceMap[enrollment.id] == null}"
+                                  class="status-pill status-primary">
+                                <i class="bi bi-dash-circle"></i>
+                                Not Marked
+                            </span>
+
+                            <span th:if="${attendanceMap[enrollment.id] != null and attendanceMap[enrollment.id].name() == 'PRESENT'}"
+                                  class="status-pill status-success">
+                                <i class="bi bi-check-circle"></i>
+                                PRESENT
+                            </span>
+
+                            <span th:if="${attendanceMap[enrollment.id] != null and attendanceMap[enrollment.id].name() == 'ABSENT'}"
+                                  class="status-pill status-danger">
+                                <i class="bi bi-x-circle"></i>
+                                ABSENT
+                            </span>
+
+                            <span th:if="${attendanceMap[enrollment.id] != null and attendanceMap[enrollment.id].name() == 'LATE'}"
+                                  class="status-pill status-warning">
+                                <i class="bi bi-clock-history"></i>
+                                LATE
+                            </span>
+                        </td>
+
+                        <td>
+                            <select class="form-select attendance-select"
+                                    th:name="|attendance_${enrollment.id}|"
+                                    required>
+
+                                <option th:each="status : ${statuses}"
+                                        th:value="${status}"
+                                        th:text="${status}"
+                                        th:selected="${attendanceMap[enrollment.id] != null ? attendanceMap[enrollment.id].name() == status.name() : status.name() == 'PRESENT'}">
+                                </option>
+
+                            </select>
+                        </td>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
 
-        <button type="submit" class="btn btn-success" th:if="${!#lists.isEmpty(enrollments)}">
-            Save Attendance
-        </button>
+        <!-- Empty Message -->
+        <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-warning mt-4">
+            <i class="bi bi-info-circle me-2"></i>
+            No active enrollments found for this batch.
+        </div>
 
-        <a href="/attendance" class="btn btn-secondary">Back</a>
+        <!-- Bottom Actions -->
+        <div class="form-card mt-4" th:if="${!#lists.isEmpty(enrollments)}">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <div>
+                    <div class="fw-bold">Ready to save attendance?</div>
+                    <div class="small-muted">
+                        This will save or update attendance records for the selected date.
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="/attendance" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Back
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Save Attendance
+                    </button>
+                </div>
+
+            </div>
+        </div>
 
     </form>
 

@@ -7,33 +7,58 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container mt-4">
+<div class="container page-shell">
 
-    <div class="d-flex justify-content-between align-items-start mb-3">
-        <div>
-            <h2 class="page-title">Attendance Records</h2>
-            <p class="page-subtitle">Search and filter student attendance records</p>
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Attendance Records</h2>
+                <p class="page-subtitle">Search, filter, review, and export student attendance records.</p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-success"
+                   th:href="@{/attendance/records/export(
+                        keyword=${keyword},
+                        batchId=${selectedBatchId},
+                        fromDate=${selectedFromDate},
+                        toDate=${selectedToDate},
+                        status=${selectedStatus}
+                   )}">
+                    <i class="bi bi-download"></i>
+                    Export CSV
+                </a>
+
+                <a href="/attendance" class="btn btn-soft">
+                    <i class="bi bi-calendar-check"></i>
+                    Mark Attendance
+                </a>
+            </div>
         </div>
-
-        <a href="/attendance" class="btn btn-primary">Mark Attendance</a>
     </div>
 
+    <!-- Filters -->
     <div class="form-card mb-4">
-
         <form th:action="@{/attendance/records}" method="get" class="row g-3">
 
             <input type="hidden" name="page" value="0">
 
-            <div class="col-md-3">
+            <div class="col-lg-3 col-md-6">
                 <label class="form-label">Search</label>
-                <input type="text"
-                       name="keyword"
-                       class="form-control"
-                       placeholder="Student, code, batch, subject"
-                       th:value="${keyword}">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           placeholder="Student, code, batch, subject"
+                           th:value="${keyword}">
+                </div>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-lg-3 col-md-6">
                 <label class="form-label">Batch</label>
                 <select name="batchId" class="form-select">
                     <option value="">All Batches</option>
@@ -45,7 +70,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">From Date</label>
                 <input type="date"
                        name="fromDate"
@@ -53,7 +78,7 @@
                        th:value="${selectedFromDate}">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">To Date</label>
                 <input type="date"
                        name="toDate"
@@ -61,7 +86,7 @@
                        th:value="${selectedToDate}">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">
                     <option value="">All Status</option>
@@ -73,7 +98,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Page Size</label>
                 <select name="size" class="form-select">
                     <option value="5" th:selected="${pageSize == 5}">5</option>
@@ -83,109 +108,263 @@
                 </select>
             </div>
 
-            <div class="col-md-10 d-flex align-items-end">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="/attendance/records" class="btn btn-secondary">Reset</a>
+            <div class="col-lg-10 col-md-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i>
+                        Apply Filters
+                    </button>
+
+                    <a href="/attendance/records" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
                 </div>
             </div>
 
         </form>
-
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Student Code</th>
-            <th>Student Name</th>
-            <th>Batch</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th>Marked At</th>
-        </tr>
-        </thead>
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Attendance List</h5>
+                <p class="small-muted mb-0">Showing filtered attendance records</p>
+            </div>
 
-        <tbody>
-        <tr th:each="record : ${records}">
-            <td th:text="${record.attendanceDate}"></td>
-            <td th:text="${record.enrollment.student.studentCode}"></td>
-            <td th:text="${record.enrollment.student.fullName}"></td>
-            <td th:text="${record.enrollment.batch.batchName}"></td>
-            <td th:text="${record.enrollment.batch.subject}"></td>
-            <td th:text="${record.status}"></td>
-            <td th:text="${record.markedAt}"></td>
-        </tr>
-        </tbody>
-    </table>
+            <div class="status-pill status-primary" th:if="${totalItems > 0}">
+                <i class="bi bi-list-check"></i>
+                <span th:text="${totalItems}"></span>
+                Records
+            </div>
+        </div>
 
-    <div th:if="${#lists.isEmpty(records)}" class="alert alert-warning">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Student Code</th>
+                    <th>Student Name</th>
+                    <th>Batch</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Marked At</th>
+                    <th>Remarks</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="record : ${records}">
+                    <td>
+                        <span class="fw-bold" th:text="${record.attendanceDate}"></span>
+                    </td>
+
+                    <td>
+                        <span class="status-pill status-primary"
+                              th:text="${record.enrollment.student.studentCode}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="fw-bold" th:text="${record.enrollment.student.fullName}"></div>
+                        <div class="small-muted" th:text="${record.enrollment.student.school}"></div>
+                    </td>
+
+                    <td th:text="${record.enrollment.batch.batchName}"></td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${record.enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${record.status.name() == 'PRESENT'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'ABSENT'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'LATE'}"
+                              class="status-pill status-warning">
+                            <i class="bi bi-clock-history"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.markedAt}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.remarks}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty Message -->
+    <div th:if="${#lists.isEmpty(records)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
         No attendance records found.
     </div>
 
-    <nav th:if="${totalPages > 1}" class="mt-4">
-        <ul class="pagination justify-content-center">
+    <!-- Better Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination-wrapper mt-4">
 
-            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/attendance/records(
-                        page=${currentPage - 1},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        batchId=${selectedBatchId},
-                        fromDate=${selectedFromDate},
-                        toDate=${selectedToDate},
-                        status=${selectedStatus}
-                   )}">
-                    Previous
-                </a>
-            </li>
+        <div class="pagination-summary">
+            Showing page
+            <strong th:text="${currentPage + 1}"></strong>
+            of
+            <strong th:text="${totalPages}"></strong>
+            |
+            Total records:
+            <strong th:text="${totalItems}"></strong>
+        </div>
 
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == currentPage} ? 'active'">
+        <nav>
+            <ul class="pagination app-pagination justify-content-center flex-wrap">
 
-                <a class="page-link"
-                   th:href="@{/attendance/records(
-                        page=${i},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        batchId=${selectedBatchId},
-                        fromDate=${selectedFromDate},
-                        toDate=${selectedToDate},
-                        status=${selectedStatus}
-                   )}"
-                   th:text="${i + 1}">
-                </a>
-            </li>
+                <!-- First Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}">
+                        <i class="bi bi-chevron-double-left"></i>
+                        First
+                    </a>
+                </li>
 
-            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/attendance/records(
-                        page=${currentPage + 1},
-                        size=${pageSize},
-                        keyword=${keyword},
-                        batchId=${selectedBatchId},
-                        fromDate=${selectedFromDate},
-                        toDate=${selectedToDate},
-                        status=${selectedStatus}
-                   )}">
-                    Next
-                </a>
-            </li>
+                <!-- Previous Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=${currentPage - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}">
+                        <i class="bi bi-chevron-left"></i>
+                        Prev
+                    </a>
+                </li>
 
-        </ul>
-    </nav>
+                <!-- First Number -->
+                <li class="page-item" th:if="${startPage > 0}">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}">
+                        1
+                    </a>
+                </li>
 
-    <div class="text-center text-muted mt-2" th:if="${totalItems > 0}">
-        Showing page
-        <span th:text="${currentPage + 1}"></span>
-        of
-        <span th:text="${totalPages}"></span>
-        |
-        Total records:
-        <span th:text="${totalItems}"></span>
+                <!-- Left Dots -->
+                <li class="page-item disabled" th:if="${startPage > 1}">
+                    <span class="page-link page-dots">...</span>
+                </li>
+
+                <!-- Middle Page Numbers -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=${i},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}"
+                       th:text="${i + 1}">
+                    </a>
+                </li>
+
+                <!-- Right Dots -->
+                <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                    <span class="page-link page-dots">...</span>
+                </li>
+
+                <!-- Last Number -->
+                <li class="page-item" th:if="${endPage < totalPages - 1}">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}"
+                       th:text="${totalPages}">
+                    </a>
+                </li>
+
+                <!-- Next Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=${currentPage + 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}">
+                        Next
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+                <!-- Last Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/attendance/records(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            batchId=${selectedBatchId},
+                            fromDate=${selectedFromDate},
+                            toDate=${selectedToDate},
+                            status=${selectedStatus}
+                       )}">
+                        Last
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
     </div>
 
 </div>

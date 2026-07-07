@@ -1,65 +1,151 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Payment Form')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Add Monthly Payment</h2>
+<div class="container page-shell">
 
-    <form th:action="@{/payments/save}" method="post">
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Add Student Payment</h2>
+                <p class="page-subtitle">
+                    Record monthly tuition payments and automatically calculate payment status and balance.
+                </p>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Select Student Enrollment</label>
-            <select name="enrollmentId" class="form-select" required>
-                <option value="">Select Enrollment</option>
-                <option th:each="enrollment : ${enrollments}"
-                        th:value="${enrollment.id}"
-                        th:text="${enrollment.student.studentCode + ' - ' + enrollment.student.fullName + ' | ' + enrollment.batch.batchName + ' | Rs. ' + enrollment.batch.monthlyFee}">
-                </option>
-            </select>
+            <a href="/payments" class="btn btn-soft">
+                <i class="bi bi-arrow-left"></i>
+                Back to Payments
+            </a>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Payment Month</label>
-            <select name="paymentMonth" class="form-select" required>
-                <option th:each="month : ${#numbers.sequence(1,12)}"
-                        th:value="${month}"
-                        th:text="${month}"
-                        th:selected="${month == currentMonth}">
-                </option>
-            </select>
-        </div>
+    <!-- Form Card -->
+    <div class="form-card">
 
-        <div class="mb-3">
-            <label class="form-label">Payment Year</label>
-            <input type="number" name="paymentYear" class="form-control" th:value="${currentYear}" required>
-        </div>
+        <form th:action="@{/payments/save}" method="post" class="row g-4">
 
-        <div class="mb-3">
-            <label class="form-label">Paid Amount</label>
-            <input type="number" name="paidAmount" class="form-control" min="0" step="0.01" required>
-        </div>
+            <!-- Payment Details -->
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-cash-stack me-2"></i>
+                    Payment Details
+                </h5>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Payment Method</label>
-            <select name="paymentMethod" class="form-select" required>
-                <option th:each="method : ${methods}"
-                        th:value="${method}"
-                        th:text="${method}">
-                </option>
-            </select>
-        </div>
+            <div class="col-lg-12">
+                <label class="form-label">Student Enrollment</label>
+                <select name="enrollmentId" class="form-select" required>
+                    <option value="">Choose student enrollment</option>
 
-        <div class="mb-3">
-            <label class="form-label">Remarks</label>
-            <textarea name="remarks" class="form-control"></textarea>
-        </div>
+                    <option th:each="enrollment : ${enrollments}"
+                            th:value="${enrollment.id}"
+                            th:text="${enrollment.student.studentCode + ' - ' + enrollment.student.fullName + ' | ' + enrollment.batch.batchName + ' | Rs. ' + enrollment.batch.monthlyFee}">
+                    </option>
+                </select>
 
-        <button type="submit" class="btn btn-success">Save Payment</button>
-        <a href="/payments" class="btn btn-secondary">Cancel</a>
+                <div class="small-muted mt-2">
+                    Select the student's active enrollment. The expected amount is taken from the selected batch fee.
+                </div>
+            </div>
 
-    </form>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Payment Month</label>
+                <select name="paymentMonth" class="form-select" required>
+                    <option value="">Select Month</option>
+                    <option th:each="month : ${#numbers.sequence(1,12)}"
+                            th:value="${month}"
+                            th:text="${month}"
+                            th:selected="${month == currentMonth}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Payment Year</label>
+                <input type="number"
+                       name="paymentYear"
+                       class="form-control"
+                       th:value="${currentYear}"
+                       min="2020"
+                       max="2100"
+                       required>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Paid Amount</label>
+                <div class="input-group">
+                    <span class="input-group-text">Rs.</span>
+                    <input type="number"
+                           name="paidAmount"
+                           class="form-control"
+                           step="0.01"
+                           min="0"
+                           placeholder="3000.00"
+                           required>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Payment Method</label>
+                <select name="paymentMethod" class="form-select" required>
+                    <option value="">Select Method</option>
+                    <option th:each="method : ${methods}"
+                            th:value="${method}"
+                            th:text="${method}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Remarks</label>
+                <textarea name="remarks"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Optional notes about this payment"></textarea>
+            </div>
+
+            <!-- Info Box -->
+            <div class="col-12">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-bold mb-1">Automatic Calculation</div>
+                        <div class="small-muted">
+                            The system will compare the paid amount with the batch monthly fee and automatically mark
+                            the payment as PAID, PARTIAL, or UNPAID.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Save Payment
+                    </button>
+
+                    <a href="/payments" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

@@ -6,13 +6,13 @@ import lk.janith.tuitionmanagement.enums.EducationLevel;
 import lk.janith.tuitionmanagement.enums.Grade;
 import lk.janith.tuitionmanagement.enums.StreamType;
 import lk.janith.tuitionmanagement.service.BatchService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 
@@ -25,7 +25,7 @@ public class BatchController {
     public BatchController(BatchService batchService) {
         this.batchService = batchService;
     }
-
+    
     @GetMapping
     public String listBatches(
             @RequestParam(required = false) String keyword,
@@ -52,7 +52,11 @@ public class BatchController {
             selectedStream = StreamType.valueOf(stream);
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
 
         Page<Batch> batchPage = batchService.searchBatches(
                 keyword,
@@ -61,6 +65,19 @@ public class BatchController {
                 selectedStream,
                 pageable
         );
+
+        int totalPages = batchPage.getTotalPages();
+
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(totalPages - 1, page + 2);
+
+        if (totalPages > 0 && endPage - startPage < 4) {
+            if (startPage == 0) {
+                endPage = Math.min(totalPages - 1, startPage + 4);
+            } else if (endPage == totalPages - 1) {
+                startPage = Math.max(0, endPage - 4);
+            }
+        }
 
         model.addAttribute("batches", batchPage.getContent());
         model.addAttribute("batchPage", batchPage);
@@ -76,43 +93,62 @@ public class BatchController {
 
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
-        model.addAttribute("totalPages", batchPage.getTotalPages());
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalItems", batchPage.getTotalElements());
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
 
         return "batches/list";
     }
 
+
     @GetMapping("/new")
-    public String showAddBatchForm(Model model) {
+    public String showBatchForm(Model model) {
         model.addAttribute("batch", new Batch());
-        loadFormData(model);
+        addBatchFormData(model);
+
         return "batches/form";
     }
+
 
     @PostMapping("/save")
     public String saveBatch(@ModelAttribute Batch batch) {
         batchService.saveBatch(batch);
+
         return "redirect:/batches";
     }
 
+
     @GetMapping("/edit/{id}")
-    public String showEditBatchForm(@PathVariable Long id, Model model) {
-        model.addAttribute("batch", batchService.getBatchById(id));
-        loadFormData(model);
+    public String editBatch(
+            @PathVariable Long id,
+            Model model
+    ) {
+        Batch batch = batchService.getBatchById(id);
+
+        model.addAttribute("batch", batch);
+        addBatchFormData(model);
+
         return "batches/form";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteBatch(@PathVariable Long id) {
         batchService.deleteBatch(id);
+
         return "redirect:/batches";
     }
 
-    private void loadFormData(Model model) {
+    private void addBatchFormData(Model model) {
         model.addAttribute("educationLevels", EducationLevel.values());
         model.addAttribute("grades", Grade.values());
         model.addAttribute("streams", StreamType.values());
-        model.addAttribute("days", DayOfWeek.values());
+
         model.addAttribute("statuses", BatchStatus.values());
+        model.addAttribute("batchStatuses", BatchStatus.values());
+
+        model.addAttribute("daysOfWeek", DayOfWeek.values());
+        model.addAttribute("dayOfWeeks", DayOfWeek.values());
     }
 }

@@ -7,92 +7,126 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container">
+<div class="container page-shell">
 
-    <div class="mb-4">
-        <h2 class="page-title">Dashboard</h2>
-        <p class="page-subtitle">Student, batch, attendance, payment, and income overview</p>
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Dashboard</h2>
+                <p class="page-subtitle">
+                    Welcome back. Here is the latest overview of your tuition class management system.
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/students/new" class="btn btn-soft">
+                    <i class="bi bi-person-plus"></i>
+                    Add Student
+                </a>
+
+                <a href="/payments/new" class="btn btn-success">
+                    <i class="bi bi-cash-stack"></i>
+                    Add Payment
+                </a>
+            </div>
+        </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row g-3 mb-4">
+    <!-- Main Stats -->
+    <div class="row g-4 mb-4">
 
-        <div class="col-md-3">
-            <div class="card shadow-sm border-primary">
-                <div class="card-body">
-                    <h6 class="text-muted">Total Students</h6>
-                    <h3 th:text="${totalStudents}">0</h3>
-                    <a href="/students" class="btn btn-sm btn-primary">View Students</a>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value" th:text="${totalStudents}">0</div>
+                <div class="small-muted">
+                    Active:
+                    <span th:text="${activeStudents}">0</span>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm border-success">
-                <div class="card-body">
-                    <h6 class="text-muted">Active Students</h6>
-                    <h3 th:text="${activeStudents}">0</h3>
-                    <a href="/students" class="btn btn-sm btn-success">Manage Students</a>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-journal-bookmark"></i>
+                </div>
+                <div class="stat-label">Total Batches</div>
+                <div class="stat-value" th:text="${totalBatches}">0</div>
+                <div class="small-muted">
+                    Active:
+                    <span th:text="${activeBatches}">0</span>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm border-info">
-                <div class="card-body">
-                    <h6 class="text-muted">Total Batches</h6>
-                    <h3 th:text="${totalBatches}">0</h3>
-                    <a href="/batches" class="btn btn-sm btn-info">View Batches</a>
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person-check"></i>
+                </div>
+                <div class="stat-label">Active Enrollments</div>
+                <div class="stat-value" th:text="${activeEnrollments}">0</div>
+                <div class="small-muted">Currently active student-batch links</div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="stat-label">Today Attendance</div>
+                <div class="stat-value" th:text="${todayAttendance}">0</div>
+                <div class="small-muted" th:text="${today}">Today</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Money Stats -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-xl-6 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="stat-label">This Month Income</div>
+                        <div class="stat-value">
+                            Rs.
+                            <span th:text="${monthlyIncome}">0.00</span>
+                        </div>
+                        <div class="small-muted">
+                            Month:
+                            <span th:text="${currentMonth}">0</span>
+                            /
+                            <span th:text="${currentYear}">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm border-secondary">
-                <div class="card-body">
-                    <h6 class="text-muted">Active Batches</h6>
-                    <h3 th:text="${activeBatches}">0</h3>
-                    <a href="/batches" class="btn btn-sm btn-secondary">Manage Batches</a>
-                </div>
-            </div>
-        </div>
+        <div class="col-xl-6 col-md-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="stat-label">Pending Payments</div>
+                        <div class="stat-value" th:text="${pendingPayments}">0</div>
+                        <div class="small-muted">Students with unpaid or partial payments this month</div>
+                    </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm border-dark">
-                <div class="card-body">
-                    <h6 class="text-muted">Active Enrollments</h6>
-                    <h3 th:text="${activeEnrollments}">0</h3>
-                    <a href="/enrollments" class="btn btn-sm btn-dark">View Enrollments</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-warning">
-                <div class="card-body">
-                    <h6 class="text-muted">Today Attendance</h6>
-                    <h3 th:text="${todayAttendanceCount}">0</h3>
-                    <a href="/attendance" class="btn btn-sm btn-warning">Mark Attendance</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-success">
-                <div class="card-body">
-                    <h6 class="text-muted">This Month Income</h6>
-                    <h3>Rs. <span th:text="${thisMonthIncome}">0</span></h3>
-                    <a href="/payments" class="btn btn-sm btn-success">View Payments</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm border-danger">
-                <div class="card-body">
-                    <h6 class="text-muted">Pending Payments</h6>
-                    <h3 th:text="${pendingPayments}">0</h3>
-                    <a href="/payments/dues" class="btn btn-sm btn-danger">View Dues</a>
+                    <div class="stat-icon">
+                        <i class="bi bi-exclamation-circle"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,35 +134,202 @@
     </div>
 
     <!-- Charts -->
-    <div class="row g-3">
+    <div class="row g-4 mb-4">
 
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>Payment Status</h5>
-                    <p class="text-muted">Current month payment summary</p>
-                    <canvas id="paymentStatusChart"></canvas>
+        <div class="col-xl-8">
+            <div class="table-card">
+                <div class="table-card-header">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Monthly Income Overview</h5>
+                        <p class="small-muted mb-0">Income trend for the current year</p>
+                    </div>
+
+                    <div class="status-pill status-primary">
+                        <i class="bi bi-calendar3"></i>
+                        <span th:text="${currentYear}">Year</span>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <canvas id="incomeChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>Monthly Income by Batch</h5>
-                    <p class="text-muted">Income collected from each batch this month</p>
-                    <canvas id="incomeByBatchChart"></canvas>
+        <div class="col-xl-4">
+            <div class="table-card h-100">
+                <div class="table-card-header">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Payment Status</h5>
+                        <p class="small-muted mb-0">Current month payment summary</p>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+
+                <div class="px-4 pb-4 d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            Paid
+                        </span>
+                        <strong th:text="${paidCount}">0</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-warning">
+                            <i class="bi bi-exclamation-circle"></i>
+                            Partial
+                        </span>
+                        <strong th:text="${partialCount}">0</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            Unpaid
+                        </span>
+                        <strong th:text="${unpaidCount}">0</strong>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5>Today Attendance</h5>
-                    <p class="text-muted">Present, absent, and late status today</p>
-                    <canvas id="attendanceStatusChart"></canvas>
+    </div>
+
+    <!-- Attendance + Quick Actions -->
+    <div class="row g-4">
+
+        <div class="col-xl-5">
+            <div class="table-card h-100">
+                <div class="table-card-header">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Today Attendance</h5>
+                        <p class="small-muted mb-0">Present, absent, and late summary</p>
+                    </div>
                 </div>
+
+                <div class="p-4">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+
+                <div class="px-4 pb-4 d-flex flex-column gap-2">
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            Present
+                        </span>
+                        <strong th:text="${presentCount}">0</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            Absent
+                        </span>
+                        <strong th:text="${absentCount}">0</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="status-pill status-warning">
+                            <i class="bi bi-clock-history"></i>
+                            Late
+                        </span>
+                        <strong th:text="${lateCount}">0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-7">
+            <div class="table-card h-100">
+                <div class="table-card-header">
+                    <div>
+                        <h5 class="mb-1 fw-bold">Quick Actions</h5>
+                        <p class="small-muted mb-0">Common tasks for daily operations</p>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <a href="/students/new" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-person-plus"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Add New Student</div>
+                                    <div class="small-muted">Register a new student</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="/batches/new" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Create Batch</div>
+                                    <div class="small-muted">Add a new class batch</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="/enrollments/new" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-person-check"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">New Enrollment</div>
+                                    <div class="small-muted">Enroll student to class</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="/attendance" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Mark Attendance</div>
+                                    <div class="small-muted">Record daily attendance</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="/payments/new" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-cash-stack"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">Add Payment</div>
+                                    <div class="small-muted">Record student payment</div>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="/reports" class="quick-action-card">
+                                <div class="quick-action-icon">
+                                    <i class="bi bi-file-earmark-bar-graph"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">View Reports</div>
+                                    <div class="small-muted">Income and student reports</div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -137,74 +338,68 @@
 </div>
 
 <script th:inline="javascript">
-    const paymentStatusLabels = /*[[${paymentStatusLabels}]]*/ [];
-    const paymentStatusValues = /*[[${paymentStatusValues}]]*/ [];
+    const monthLabels = /*[[${monthLabels}]]*/ [];
+    const incomeValues = /*[[${incomeValues}]]*/ [];
 
-    const incomeBatchLabels = /*[[${incomeBatchLabels}]]*/ [];
-    const incomeBatchValues = /*[[${incomeBatchValues}]]*/ [];
+    const paidCount = /*[[${paidCount}]]*/ 0;
+    const partialCount = /*[[${partialCount}]]*/ 0;
+    const unpaidCount = /*[[${unpaidCount}]]*/ 0;
 
-    const attendanceStatusLabels = /*[[${attendanceStatusLabels}]]*/ [];
-    const attendanceStatusValues = /*[[${attendanceStatusValues}]]*/ [];
+    const presentCount = /*[[${presentCount}]]*/ 0;
+    const absentCount = /*[[${absentCount}]]*/ 0;
+    const lateCount = /*[[${lateCount}]]*/ 0;
 
-    new Chart(document.getElementById('paymentStatusChart'), {
-        type: 'doughnut',
+    new Chart(document.getElementById('incomeChart'), {
+        type: 'line',
         data: {
-            labels: paymentStatusLabels,
+            labels: monthLabels,
             datasets: [{
-                label: 'Students',
-                data: paymentStatusValues
+                label: 'Monthly Income',
+                data: incomeValues,
+                tension: 0.4,
+                fill: true
             }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    display: true
                 }
-            }
-        }
-    });
-
-    new Chart(document.getElementById('incomeByBatchChart'), {
-        type: 'bar',
-        data: {
-            labels: incomeBatchLabels,
-            datasets: [{
-                label: 'Income Rs.',
-                data: incomeBatchValues
-            }]
-        },
-        options: {
-            responsive: true,
+            },
             scales: {
                 y: {
                     beginAtZero: true
                 }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
             }
         }
     });
 
-    new Chart(document.getElementById('attendanceStatusChart'), {
+    new Chart(document.getElementById('paymentChart'), {
         type: 'doughnut',
         data: {
-            labels: attendanceStatusLabels,
+            labels: ['Paid', 'Partial', 'Unpaid'],
             datasets: [{
-                label: 'Students',
-                data: attendanceStatusValues
+                data: [paidCount, partialCount, unpaidCount]
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
+            cutout: '65%'
+        }
+    });
+
+    new Chart(document.getElementById('attendanceChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Present', 'Absent', 'Late'],
+            datasets: [{
+                data: [presentCount, absentCount, lateCount]
+            }]
+        },
+        options: {
+            responsive: true,
+            cutout: '65%'
         }
     });
 </script>

@@ -47,4 +47,27 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             @Param("status") AttendanceStatus status,
             Pageable pageable
     );
+    @Query("""
+        SELECT a FROM Attendance a
+        WHERE
+        (
+            :keyword IS NULL OR :keyword = '' OR
+            LOWER(a.enrollment.student.studentCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(a.enrollment.student.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(a.enrollment.batch.batchName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(a.enrollment.batch.subject) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        )
+        AND (:batchId IS NULL OR a.enrollment.batch.id = :batchId)
+        AND (:fromDate IS NULL OR a.attendanceDate >= :fromDate)
+        AND (:toDate IS NULL OR a.attendanceDate <= :toDate)
+        AND (:status IS NULL OR a.status = :status)
+        ORDER BY a.attendanceDate DESC, a.id DESC
+        """)
+    List<Attendance> searchAttendanceRecordsForExport(
+            @Param("keyword") String keyword,
+            @Param("batchId") Long batchId,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("status") AttendanceStatus status
+    );
 }

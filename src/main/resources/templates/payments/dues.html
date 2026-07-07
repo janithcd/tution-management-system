@@ -1,74 +1,234 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Payment Dues')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Payment Dues Report</h2>
+<div class="container page-shell">
 
-    <form th:action="@{/payments/dues}" method="get" class="row g-3 mb-4">
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Payment Dues</h2>
+                <p class="page-subtitle">
+                    Check paid, partial, and unpaid students for a selected month.
+                </p>
+            </div>
 
-        <div class="col-md-4">
-            <label class="form-label">Month</label>
-            <select name="paymentMonth" class="form-select" required>
-                <option th:each="month : ${#numbers.sequence(1,12)}"
-                        th:value="${month}"
-                        th:text="${month}"
-                        th:selected="${month == selectedMonth}">
-                </option>
-            </select>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/payments/new" class="btn btn-success">
+                    <i class="bi bi-cash-stack"></i>
+                    Add Payment
+                </a>
+
+                <a href="/payments" class="btn btn-soft">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Payments
+                </a>
+            </div>
         </div>
-
-        <div class="col-md-4">
-            <label class="form-label">Year</label>
-            <input type="number" name="paymentYear" class="form-control" th:value="${selectedYear}" required>
-        </div>
-
-        <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
-
-    </form>
-
-    <div class="alert alert-info">
-        Showing payment status for:
-        <strong th:text="${selectedMonth}"></strong> /
-        <strong th:text="${selectedYear}"></strong>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Student Code</th>
-            <th>Student Name</th>
-            <th>Batch</th>
-            <th>Expected</th>
-            <th>Paid</th>
-            <th>Balance</th>
-            <th>Status</th>
-        </tr>
-        </thead>
+    <!-- Filter Form -->
+    <div class="form-card mb-4">
 
-        <tbody>
-        <tr th:each="due : ${dues}">
-            <td th:text="${due.enrollment.student.studentCode}"></td>
-            <td th:text="${due.enrollment.student.fullName}"></td>
-            <td th:text="${due.enrollment.batch.batchName}"></td>
-            <td th:text="${due.expectedAmount}"></td>
-            <td th:text="${due.paidAmount}"></td>
-            <td th:text="${due.balanceAmount}"></td>
-            <td th:text="${due.status}"></td>
-        </tr>
-        </tbody>
-    </table>
+        <form th:action="@{/payments/dues}" method="get" class="row g-4">
 
-    <div th:if="${#lists.isEmpty(dues)}" class="alert alert-warning">
-        No active enrollments found.
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-funnel me-2"></i>
+                    Due Report Filters
+                </h5>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Payment Month</label>
+                <select name="paymentMonth" class="form-select" required>
+                    <option th:each="month : ${#numbers.sequence(1,12)}"
+                            th:value="${month}"
+                            th:text="${month}"
+                            th:selected="${month == selectedMonth}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Payment Year</label>
+                <input type="number"
+                       name="paymentYear"
+                       class="form-control"
+                       th:value="${selectedYear}"
+                       min="2020"
+                       max="2100"
+                       required>
+            </div>
+
+            <div class="col-lg-4 col-md-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        View Dues
+                    </button>
+
+                    <a href="/payments/dues" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
     </div>
 
-    <a href="/payments/new" class="btn btn-success">Add Payment</a>
-    <a href="/payments" class="btn btn-secondary">Back to Payments</a>
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <div class="stat-label">Selected Month</div>
+                <div class="stat-value">
+                    <span th:text="${selectedMonth}">0</span>
+                    /
+                    <span th:text="${selectedYear}">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-label">Total Due Records</div>
+                <div class="stat-value" th:text="${#lists.size(dues)}">0</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-circle"></i>
+                </div>
+                <div class="stat-label">Report Type</div>
+                <div class="stat-value fs-3">Monthly</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Table -->
+    <div class="table-card" th:if="${!#lists.isEmpty(dues)}">
+
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Payment Due List</h5>
+                <p class="small-muted mb-0">
+                    Payment status for active enrollments in the selected month
+                </p>
+            </div>
+
+            <div class="status-pill status-primary">
+                <i class="bi bi-list-check"></i>
+                <span th:text="${#lists.size(dues)}"></span>
+                Records
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Batch</th>
+                    <th>Subject</th>
+                    <th>Expected</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Month</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="due : ${dues}">
+
+                    <td>
+                        <div class="fw-bold" th:text="${due.enrollment.student.fullName}"></div>
+                        <div class="small-muted" th:text="${due.enrollment.student.studentCode}"></div>
+                    </td>
+
+                    <td>
+                        <div class="fw-semibold" th:text="${due.enrollment.batch.batchName}"></div>
+                        <div class="small-muted" th:text="${due.enrollment.batch.teacherName}"></div>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${due.enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${due.expectedAmount}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${due.paidAmount}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${due.balanceAmount}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${due.status.name() == 'PAID'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${due.status}"></span>
+                        </span>
+
+                        <span th:if="${due.status.name() == 'PARTIAL'}"
+                              class="status-pill status-warning">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:text="${due.status}"></span>
+                        </span>
+
+                        <span th:if="${due.status.name() == 'UNPAID'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${due.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="status-pill status-primary">
+                            <span th:text="${selectedMonth}"></span>
+                            /
+                            <span th:text="${selectedYear}"></span>
+                        </span>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Empty Message -->
+    <div th:if="${#lists.isEmpty(dues)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No payment due records found for the selected month.
+    </div>
 
 </div>
 

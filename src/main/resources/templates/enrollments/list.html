@@ -1,47 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Enrollments')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <form th:action="@{/enrollments}" method="get" class="row g-3 mb-4">
-        <div class="col-md-2">
-            <label class="form-label">Page Size</label>
-            <select name="size" class="form-select">
-                <option value="5" th:selected="${pageSize == 5}">5</option>
-                <option value="10" th:selected="${pageSize == 10}">10</option>
-                <option value="20" th:selected="${pageSize == 20}">20</option>
-                <option value="50" th:selected="${pageSize == 50}">50</option>
-            </select>
+<div class="container page-shell">
+
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Student Enrollments</h2>
+                <p class="page-subtitle">Enroll students into matching class batches and manage active enrollments.</p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/enrollments/new" class="btn btn-soft">
+                    <i class="bi bi-person-plus"></i>
+                    New Enrollment
+                </a>
+            </div>
         </div>
-
-        <input type="hidden" name="page" value="0">
-
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Apply</button>
-        </div>
-    </form>
-    <div class="d-flex justify-content-between mb-3">
-        <h2>Student Enrollments</h2>
-        <a href="/enrollments/new" class="btn btn-primary">Enroll Student</a>
     </div>
-    <div class="form-card mb-4">
 
+    <!-- Filters -->
+    <div class="form-card mb-4">
         <form th:action="@{/enrollments}" method="get" class="row g-3">
 
             <input type="hidden" name="page" value="0">
 
-            <div class="col-md-3">
+            <div class="col-lg-3 col-md-6">
                 <label class="form-label">Search</label>
-                <input type="text"
-                       name="keyword"
-                       class="form-control"
-                       placeholder="Student, code, batch, subject"
-                       th:value="${keyword}">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           placeholder="Student, code, batch, subject"
+                           th:value="${keyword}">
+                </div>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Level</label>
                 <select name="educationLevel" class="form-select">
                     <option value="">All Levels</option>
@@ -53,7 +58,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Grade</label>
                 <select name="grade" class="form-select">
                     <option value="">All Grades</option>
@@ -65,7 +70,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Stream</label>
                 <select name="stream" class="form-select">
                     <option value="">All Streams</option>
@@ -77,7 +82,7 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">
                     <option value="">All Status</option>
@@ -89,7 +94,7 @@
                 </select>
             </div>
 
-            <div class="col-md-1">
+            <div class="col-lg-1 col-md-6">
                 <label class="form-label">Size</label>
                 <select name="size" class="form-select">
                     <option value="5" th:selected="${pageSize == 5}">5</option>
@@ -99,123 +104,285 @@
                 </select>
             </div>
 
-            <div class="col-md-12">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="/enrollments" class="btn btn-secondary">Reset</a>
+            <div class="col-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i>
+                        Apply Filters
+                    </button>
+
+                    <a href="/enrollments" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
                 </div>
             </div>
 
         </form>
-
     </div>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Student Code</th>
-            <th>Student Name</th>
-            <th>Batch</th>
-            <th>Level</th>
-            <th>Grade</th>
-            <th>Stream</th>
-            <th>Subject</th>
-            <th>Enrolled Date</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        </thead>
 
-        <tbody>
-        <tr th:each="enrollment : ${enrollments}">
-            <td th:text="${enrollment.student.studentCode}"></td>
-            <td th:text="${enrollment.student.fullName}"></td>
-            <td th:text="${enrollment.batch.batchName}"></td>
-            <td th:text="${enrollment.batch.educationLevel}"></td>
-            <td th:text="${enrollment.batch.grade}"></td>
-            <td th:text="${enrollment.batch.stream}"></td>
-            <td th:text="${enrollment.batch.subject}"></td>
-            <td th:text="${enrollment.enrolledDate}"></td>
-            <td th:text="${enrollment.status}"></td>
-            <td>
-                <a th:if="${enrollment.status.name() == 'ACTIVE'}"
-                   th:href="@{/enrollments/deactivate/{id}(id=${enrollment.id})}"
-                   class="btn btn-sm btn-warning">
-                    Deactivate
-                </a>
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Enrollment List</h5>
+                <p class="small-muted mb-0">Showing filtered student enrollment records</p>
+            </div>
 
-                <a th:if="${enrollment.status.name() == 'INACTIVE'}"
-                   th:href="@{/enrollments/activate/{id}(id=${enrollment.id})}"
-                   class="btn btn-sm btn-success">
-                    Activate
-                </a>
+            <div class="status-pill status-primary" th:if="${totalItems > 0}">
+                <i class="bi bi-person-check"></i>
+                <span th:text="${totalItems}"></span>
+                Enrollments
+            </div>
+        </div>
 
-                <a th:href="@{/enrollments/delete/{id}(id=${enrollment.id})}"
-                   class="btn btn-sm btn-danger"
-                   onclick="return confirm('Are you sure?')">
-                    Delete
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-warning">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student</th>
+                    <th>Batch</th>
+                    <th>Level</th>
+                    <th>Grade</th>
+                    <th>Stream</th>
+                    <th>Subject</th>
+                    <th>Enrolled Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="enrollment : ${enrollments}">
+                    <td>
+                        <span class="fw-bold" th:text="${enrollment.id}"></span>
+                    </td>
+
+                    <td>
+                        <div class="fw-bold" th:text="${enrollment.student.fullName}"></div>
+                        <div class="small-muted" th:text="${enrollment.student.studentCode}"></div>
+                    </td>
+
+                    <td>
+                        <div class="fw-semibold" th:text="${enrollment.batch.batchName}"></div>
+                        <div class="small-muted" th:text="${enrollment.batch.teacherName}"></div>
+                    </td>
+
+                    <td>
+                        <span class="status-pill status-primary"
+                              th:text="${enrollment.batch.educationLevel}">
+                        </span>
+                    </td>
+
+                    <td th:text="${enrollment.batch.grade}"></td>
+
+                    <td>
+                        <span class="small-muted" th:text="${enrollment.batch.stream}"></span>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${enrollment.enrolledDate}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${enrollment.status.name() == 'ACTIVE'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${enrollment.status}"></span>
+                        </span>
+
+                        <span th:if="${enrollment.status.name() == 'INACTIVE'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${enrollment.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2 flex-wrap">
+
+                            <a th:if="${enrollment.status.name() == 'ACTIVE'}"
+                               th:href="@{/enrollments/deactivate/{id}(id=${enrollment.id})}"
+                               class="btn btn-warning btn-sm">
+                                <i class="bi bi-pause-circle"></i>
+                                Deactivate
+                            </a>
+
+                            <a th:if="${enrollment.status.name() == 'INACTIVE'}"
+                               th:href="@{/enrollments/activate/{id}(id=${enrollment.id})}"
+                               class="btn btn-success btn-sm">
+                                <i class="bi bi-play-circle"></i>
+                                Activate
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty Message -->
+    <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
         No enrollments found.
     </div>
-    <nav th:if="${totalPages > 1}" class="mt-4">
-        <ul class="pagination justify-content-center">
 
-            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/enrollments(
-                    page=${currentPage - 1},
-                    size=${pageSize},
-                    keyword=${keyword},
-                    educationLevel=${selectedEducationLevel},
-                    grade=${selectedGrade},
-                    stream=${selectedStream},
-                    status=${selectedStatus}
-               )}">
-                    Previous
-                </a>
-            </li>
+    <!-- Better Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination-wrapper mt-4">
 
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == currentPage} ? 'active'">
+        <div class="pagination-summary">
+            Showing page
+            <strong th:text="${currentPage + 1}"></strong>
+            of
+            <strong th:text="${totalPages}"></strong>
+            |
+            Total enrollments:
+            <strong th:text="${totalItems}"></strong>
+        </div>
 
-                <a class="page-link"
-                   th:href="@{/enrollments(
-                    page=${i},
-                    size=${pageSize},
-                    keyword=${keyword},
-                    educationLevel=${selectedEducationLevel},
-                    grade=${selectedGrade},
-                    stream=${selectedStream},
-                    status=${selectedStatus}
-               )}"
-                   th:text="${i + 1}">
-                </a>
-            </li>
+        <nav>
+            <ul class="pagination app-pagination justify-content-center flex-wrap">
 
+                <!-- First Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}">
+                        <i class="bi bi-chevron-double-left"></i>
+                        First
+                    </a>
+                </li>
 
+                <!-- Previous Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=${currentPage - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}">
+                        <i class="bi bi-chevron-left"></i>
+                        Prev
+                    </a>
+                </li>
 
-        </ul>
-    </nav>
+                <!-- First Number -->
+                <li class="page-item" th:if="${startPage > 0}">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}">
+                        1
+                    </a>
+                </li>
 
-  
+                <!-- Left Dots -->
+                <li class="page-item disabled" th:if="${startPage > 1}">
+                    <span class="page-link page-dots">...</span>
+                </li>
 
-    <div class="text-center text-muted mt-2" th:if="${totalItems > 0}">
-        Showing page
-        <span th:text="${currentPage + 1}"></span>
-        of
-        <span th:text="${totalPages}"></span>
-        |
-        Total enrollments:
-        <span th:text="${totalItems}"></span>
+                <!-- Middle Numbers -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=${i},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}"
+                       th:text="${i + 1}">
+                    </a>
+                </li>
+
+                <!-- Right Dots -->
+                <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                    <span class="page-link page-dots">...</span>
+                </li>
+
+                <!-- Last Number -->
+                <li class="page-item" th:if="${endPage < totalPages - 1}">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}"
+                       th:text="${totalPages}">
+                    </a>
+                </li>
+
+                <!-- Next Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=${currentPage + 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}">
+                        Next
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+                <!-- Last Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/enrollments(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade},
+                            stream=${selectedStream},
+                            status=${selectedStatus}
+                       )}">
+                        Last
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
     </div>
-
-    <a href="/students" class="btn btn-secondary">Students</a>
-    <a href="/batches" class="btn btn-secondary">Batches</a>
 
 </div>
 

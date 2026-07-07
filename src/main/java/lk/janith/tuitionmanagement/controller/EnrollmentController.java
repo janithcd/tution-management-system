@@ -1,25 +1,20 @@
 package lk.janith.tuitionmanagement.controller;
 
-import lk.janith.tuitionmanagement.service.BatchService;
-import lk.janith.tuitionmanagement.service.EnrollmentService;
-import lk.janith.tuitionmanagement.service.StudentService;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import lk.janith.tuitionmanagement.entity.Enrollment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import lk.janith.tuitionmanagement.entity.Enrollment;
 import lk.janith.tuitionmanagement.enums.EducationLevel;
 import lk.janith.tuitionmanagement.enums.EnrollmentStatus;
 import lk.janith.tuitionmanagement.enums.Grade;
 import lk.janith.tuitionmanagement.enums.StreamType;
+import lk.janith.tuitionmanagement.service.BatchService;
+import lk.janith.tuitionmanagement.service.EnrollmentService;
+import lk.janith.tuitionmanagement.service.StudentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/enrollments")
@@ -38,6 +33,7 @@ public class EnrollmentController {
         this.studentService = studentService;
         this.batchService = batchService;
     }
+
 
     @GetMapping
     public String listEnrollments(
@@ -71,7 +67,11 @@ public class EnrollmentController {
             selectedStatus = EnrollmentStatus.valueOf(status);
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.DESC, "id")
+        );
 
         Page<Enrollment> enrollmentPage = enrollmentService.searchEnrollments(
                 keyword,
@@ -81,6 +81,19 @@ public class EnrollmentController {
                 selectedStatus,
                 pageable
         );
+
+        int totalPages = enrollmentPage.getTotalPages();
+
+        int startPage = Math.max(0, page - 2);
+        int endPage = Math.min(totalPages - 1, page + 2);
+
+        if (totalPages > 0 && endPage - startPage < 4) {
+            if (startPage == 0) {
+                endPage = Math.min(totalPages - 1, startPage + 4);
+            } else if (endPage == totalPages - 1) {
+                startPage = Math.max(0, endPage - 4);
+            }
+        }
 
         model.addAttribute("enrollments", enrollmentPage.getContent());
         model.addAttribute("enrollmentPage", enrollmentPage);
@@ -98,51 +111,56 @@ public class EnrollmentController {
 
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
-        model.addAttribute("totalPages", enrollmentPage.getTotalPages());
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalItems", enrollmentPage.getTotalElements());
+
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
 
         return "enrollments/list";
     }
+
 
     @GetMapping("/new")
     public String showEnrollmentForm(Model model) {
         model.addAttribute("students", studentService.getAllStudents());
         model.addAttribute("batches", batchService.getAllBatches());
+
         return "enrollments/form";
     }
+
 
     @PostMapping("/save")
     public String saveEnrollment(
             @RequestParam Long studentId,
-            @RequestParam Long batchId,
-            Model model
+            @RequestParam Long batchId
     ) {
-        try {
-            enrollmentService.enrollStudent(studentId, batchId);
-            return "redirect:/enrollments";
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("students", studentService.getAllStudents());
-            model.addAttribute("batches", batchService.getAllBatches());
-            return "enrollments/form";
-        }
+        enrollmentService.enrollStudent(studentId, batchId);
+
+        return "redirect:/enrollments";
     }
+
 
     @GetMapping("/deactivate/{id}")
     public String deactivateEnrollment(@PathVariable Long id) {
         enrollmentService.deactivateEnrollment(id);
+
         return "redirect:/enrollments";
     }
+
 
     @GetMapping("/activate/{id}")
     public String activateEnrollment(@PathVariable Long id) {
         enrollmentService.activateEnrollment(id);
+
         return "redirect:/enrollments";
     }
 
+  
     @GetMapping("/delete/{id}")
     public String deleteEnrollment(@PathVariable Long id) {
-        enrollmentService.deleteEnrollment(id);
+        enrollmentService.deactivateEnrollment(id);
+
         return "redirect:/enrollments";
     }
 }

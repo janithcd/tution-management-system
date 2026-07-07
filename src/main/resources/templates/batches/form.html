@@ -1,106 +1,198 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Batch Form')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Batch Form</h2>
+<div class="container page-shell">
 
-    <form th:action="@{/batches/save}" th:object="${batch}" method="post">
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title"
+                    th:text="${batch.id == null ? 'Add New Batch' : 'Edit Batch'}">
+                    Batch Form
+                </h2>
+                <p class="page-subtitle">
+                    Create or update tuition class batches, teacher details, monthly fee, and class schedule.
+                </p>
+            </div>
 
-        <input type="hidden" th:field="*{id}">
-
-        <div class="mb-3">
-            <label class="form-label">Batch Name</label>
-            <input type="text" th:field="*{batchName}" class="form-control"
-                   placeholder="Example: O/L Grade 10 Mathematics - Sunday 8.00 AM" required>
+            <a href="/batches" class="btn btn-soft">
+                <i class="bi bi-arrow-left"></i>
+                Back to Batches
+            </a>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Education Level</label>
-            <select th:field="*{educationLevel}" class="form-select" required>
-                <option value="">Select Level</option>
-                <option th:each="level : ${educationLevels}"
-                        th:value="${level}"
-                        th:text="${level}">
-                </option>
-            </select>
-        </div>
+    <!-- Form Card -->
+    <div class="form-card">
 
-        <div class="mb-3">
-            <label class="form-label">Grade</label>
-            <select th:field="*{grade}" class="form-select" required>
-                <option value="">Select Grade</option>
-                <option th:each="grade : ${grades}"
-                        th:value="${grade}"
-                        th:text="${grade}">
-                </option>
-            </select>
-        </div>
+        <form th:action="@{/batches/save}" th:object="${batch}" method="post" class="row g-4">
 
-        <div class="mb-3">
-            <label class="form-label">Stream</label>
-            <select th:field="*{stream}" class="form-select">
-                <option th:each="stream : ${streams}"
-                        th:value="${stream}"
-                        th:text="${stream}">
-                </option>
-            </select>
-            <small class="text-muted">Use NONE for O/L classes.</small>
-        </div>
+            <input type="hidden" th:field="*{id}">
 
-        <div class="mb-3">
-            <label class="form-label">Subject</label>
-            <input type="text" th:field="*{subject}" class="form-control"
-                   placeholder="Example: Mathematics, Science, ICT, Accounting" required>
-        </div>
+            <!-- Batch Details -->
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-journal-bookmark me-2"></i>
+                    Batch Details
+                </h5>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Teacher Name</label>
-            <input type="text" th:field="*{teacherName}" class="form-control">
-        </div>
+            <div class="col-lg-6 col-md-12">
+                <label class="form-label">Batch Name</label>
+                <input type="text"
+                       th:field="*{batchName}"
+                       class="form-control"
+                       placeholder="Example: O/L Grade 10 Mathematics - Sunday 8.00 AM"
+                       required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Monthly Fee</label>
-            <input type="number" th:field="*{monthlyFee}" class="form-control" min="0" step="0.01" required>
-        </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Subject</label>
+                <input type="text"
+                       th:field="*{subject}"
+                       class="form-control"
+                       placeholder="Mathematics"
+                       required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Day</label>
-            <select th:field="*{dayOfWeek}" class="form-select">
-                <option value="">Select Day</option>
-                <option th:each="day : ${days}"
-                        th:value="${day}"
-                        th:text="${day}">
-                </option>
-            </select>
-        </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Teacher Name</label>
+                <input type="text"
+                       th:field="*{teacherName}"
+                       class="form-control"
+                       placeholder="Teacher name"
+                       required>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Start Time</label>
-            <input type="time" th:field="*{startTime}" class="form-control">
-        </div>
+            <!-- Academic Details -->
+            <div class="col-12 mt-4">
+                <h5 class="section-title">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    Academic Details
+                </h5>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">End Time</label>
-            <input type="time" th:field="*{endTime}" class="form-control">
-        </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Education Level</label>
+                <select th:field="*{educationLevel}" class="form-select" required>
+                    <option value="">Select Level</option>
+                    <option th:each="level : ${educationLevels}"
+                            th:value="${level}"
+                            th:text="${level}">
+                    </option>
+                </select>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select th:field="*{status}" class="form-select">
-                <option th:each="status : ${statuses}"
-                        th:value="${status}"
-                        th:text="${status}">
-                </option>
-            </select>
-        </div>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Grade</label>
+                <select th:field="*{grade}" class="form-select" required>
+                    <option value="">Select Grade</option>
+                    <option th:each="grade : ${grades}"
+                            th:value="${grade}"
+                            th:text="${grade}">
+                    </option>
+                </select>
+            </div>
 
-        <button type="submit" class="btn btn-success">Save Batch</button>
-        <a href="/batches" class="btn btn-secondary">Cancel</a>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Stream</label>
+                <select th:field="*{stream}" class="form-select" required>
+                    <option value="">Select Stream</option>
+                    <option th:each="stream : ${streams}"
+                            th:value="${stream}"
+                            th:text="${stream}">
+                    </option>
+                </select>
+                <div class="small-muted mt-1">
+                    Use NONE for O/L batches.
+                </div>
+            </div>
 
-    </form>
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Status</label>
+                <select th:field="*{status}" class="form-select" required>
+                    <option value="">Select Status</option>
+                    <option th:each="status : ${statuses}"
+                            th:value="${status}"
+                            th:text="${status}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Schedule and Fee -->
+            <div class="col-12 mt-4">
+                <h5 class="section-title">
+                    <i class="bi bi-calendar-week me-2"></i>
+                    Schedule and Fee
+                </h5>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Monthly Fee</label>
+                <div class="input-group">
+                    <span class="input-group-text">Rs.</span>
+                    <input type="number"
+                           step="0.01"
+                           min="0"
+                           th:field="*{monthlyFee}"
+                           class="form-control"
+                           placeholder="3000.00"
+                           required>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Class Day</label>
+                <select th:field="*{dayOfWeek}" class="form-select" required>
+                    <option value="">Select Day</option>
+                    <option th:each="day : ${daysOfWeek}"
+                            th:value="${day}"
+                            th:text="${day}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Start Time</label>
+                <input type="time"
+                       th:field="*{startTime}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">End Time</label>
+                <input type="time"
+                       th:field="*{endTime}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12 mt-4">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Save Batch
+                    </button>
+
+                    <a href="/batches" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

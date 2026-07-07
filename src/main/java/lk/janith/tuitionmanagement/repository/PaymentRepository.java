@@ -43,4 +43,24 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             @Param("status") PaymentStatus status,
             Pageable pageable
     );
+    @Query("""
+        SELECT p FROM Payment p
+        WHERE
+        (
+            :keyword IS NULL OR :keyword = '' OR
+            LOWER(p.enrollment.student.studentCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(p.enrollment.student.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR
+            LOWER(p.enrollment.batch.batchName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        )
+        AND (:paymentMonth IS NULL OR p.paymentMonth = :paymentMonth)
+        AND (:paymentYear IS NULL OR p.paymentYear = :paymentYear)
+        AND (:status IS NULL OR p.status = :status)
+        ORDER BY p.id DESC
+        """)
+    List<Payment> searchPaymentsForExport(
+            @Param("keyword") String keyword,
+            @Param("paymentMonth") Integer paymentMonth,
+            @Param("paymentYear") Integer paymentYear,
+            @Param("status") PaymentStatus status
+    );
 }

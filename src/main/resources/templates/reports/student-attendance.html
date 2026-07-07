@@ -7,59 +7,199 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container">
+<div class="container page-shell">
 
-    <div class="mb-4">
-        <h2 class="page-title">Student Attendance History</h2>
-        <p class="page-subtitle">Select a student and view attendance records</p>
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Student Attendance History</h2>
+                <p class="page-subtitle">
+                    Select a student and view all attendance records.
+                </p>
+            </div>
+
+            <a href="/reports" class="btn btn-soft">
+                <i class="bi bi-arrow-left"></i>
+                Back to Reports
+            </a>
+        </div>
     </div>
 
     <div class="form-card mb-4">
-        <form th:action="@{/reports/student-attendance}" method="get" class="row g-3">
+        <form th:action="@{/reports/student-attendance}" method="get" class="row g-4">
 
-            <div class="col-md-8">
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-person-search me-2"></i>
+                    Select Student
+                </h5>
+            </div>
+
+            <div class="col-lg-8 col-md-12">
                 <label class="form-label">Student</label>
                 <select name="studentId" class="form-select" required>
-                    <option value="">Select Student</option>
+                    <option value="">Choose a student</option>
+
                     <option th:each="student : ${students}"
                             th:value="${student.id}"
-                            th:text="${student.studentCode + ' - ' + student.fullName}"
-                            th:selected="${student.id == selectedStudentId}">
+                            th:text="${student.studentCode + ' - ' + student.fullName + ' | ' + student.grade}"
+                            th:selected="${selectedStudentId != null and selectedStudentId == student.id}">
                     </option>
                 </select>
             </div>
 
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">View Attendance</button>
+            <div class="col-lg-4 col-md-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        View History
+                    </button>
+
+                    <a href="/reports/student-attendance" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
+                </div>
             </div>
 
         </form>
     </div>
 
-    <table class="table table-bordered table-striped" th:if="${attendanceRecords != null}">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Batch</th>
-            <th>Subject</th>
-            <th>Status</th>
-            <th>Marked At</th>
-        </tr>
-        </thead>
+    <div class="row g-4 mb-4" th:if="${selectedStudent != null}">
 
-        <tbody>
-        <tr th:each="record : ${attendanceRecords}">
-            <td th:text="${record.attendanceDate}"></td>
-            <td th:text="${record.enrollment.batch.batchName}"></td>
-            <td th:text="${record.enrollment.batch.subject}"></td>
-            <td th:text="${record.status}"></td>
-            <td th:text="${record.markedAt}"></td>
-        </tr>
-        </tbody>
-    </table>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-person"></i>
+                </div>
+                <div class="stat-label">Selected Student</div>
+                <div class="stat-value fs-4" th:text="${selectedStudent.fullName}">Student</div>
+                <div class="small-muted" th:text="${selectedStudent.studentCode}">Code</div>
+            </div>
+        </div>
 
-    <div th:if="${attendanceRecords != null and #lists.isEmpty(attendanceRecords)}" class="alert alert-warning">
-        No attendance records found for this student.
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-label">Present</div>
+                <div class="stat-value" th:text="${presentCount}">0</div>
+                <span class="status-pill status-success">
+                    <i class="bi bi-check-circle"></i>
+                    PRESENT
+                </span>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-label">Absent</div>
+                <div class="stat-value" th:text="${absentCount}">0</div>
+                <span class="status-pill status-danger">
+                    <i class="bi bi-x-circle"></i>
+                    ABSENT
+                </span>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-label">Late</div>
+                <div class="stat-value" th:text="${lateCount}">0</div>
+                <span class="status-pill status-warning">
+                    <i class="bi bi-clock-history"></i>
+                    LATE
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="table-card" th:if="${!#lists.isEmpty(records)}">
+
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Attendance History</h5>
+                <p class="small-muted mb-0">All attendance records for the selected student</p>
+            </div>
+
+            <div class="status-pill status-primary">
+                <i class="bi bi-list-check"></i>
+                <span th:text="${#lists.size(records)}"></span>
+                Records
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Batch</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Marked At</th>
+                    <th>Remarks</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="record : ${records}">
+
+                    <td>
+                        <span class="fw-bold" th:text="${record.attendanceDate}"></span>
+                    </td>
+
+                    <td>
+                        <div class="fw-semibold" th:text="${record.enrollment.batch.batchName}"></div>
+                        <div class="small-muted" th:text="${record.enrollment.batch.teacherName}"></div>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${record.enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${record.status.name() == 'PRESENT'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'ABSENT'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'LATE'}"
+                              class="status-pill status-warning">
+                            <i class="bi bi-clock-history"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.markedAt}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.remarks}"></span>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div th:if="${selectedStudentId == null}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        Please select a student to view attendance history.
+    </div>
+
+    <div th:if="${selectedStudentId != null and #lists.isEmpty(records)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No attendance history found for this student.
     </div>
 
 </div>

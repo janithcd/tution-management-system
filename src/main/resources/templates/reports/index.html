@@ -7,43 +7,96 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container">
+<div class="container page-shell">
 
-  <div class="mb-4">
-    <h2 class="page-title">Reports</h2>
-    <p class="page-subtitle">View income, payment, and attendance reports</p>
+  <div class="page-hero">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <h2 class="page-title">Reports Center</h2>
+        <p class="page-subtitle">
+          View income reports, student payment histories, and attendance reports.
+        </p>
+      </div>
+
+      <a href="/dashboard" class="btn btn-soft">
+        <i class="bi bi-arrow-left"></i>
+        Back to Dashboard
+      </a>
+    </div>
   </div>
 
-  <div class="row g-3">
+  <div class="row g-4">
 
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5>Monthly Income Report</h5>
-          <p class="text-muted">View all payments and total income for a selected month.</p>
-          <a href="/reports/monthly-income" class="btn btn-primary">Open Report</a>
+    <div class="col-lg-4 col-md-6">
+      <a href="/reports/monthly-income" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-graph-up-arrow"></i>
         </div>
-      </div>
+        <div>
+          <div class="fw-bold">Monthly Income Report</div>
+          <div class="small-muted">View income by selected month and year</div>
+        </div>
+      </a>
     </div>
 
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5>Student Payment History</h5>
-          <p class="text-muted">Check all payment records of a selected student.</p>
-          <a href="/reports/student-payments" class="btn btn-success">Open Report</a>
+    <div class="col-lg-4 col-md-6">
+      <a href="/reports/student-payments" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-cash-stack"></i>
         </div>
-      </div>
+        <div>
+          <div class="fw-bold">Student Payment History</div>
+          <div class="small-muted">Check all payments made by a student</div>
+        </div>
+      </a>
     </div>
 
-    <div class="col-md-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5>Student Attendance History</h5>
-          <p class="text-muted">Check attendance records of a selected student.</p>
-          <a href="/reports/student-attendance" class="btn btn-warning">Open Report</a>
+    <div class="col-lg-4 col-md-6">
+      <a href="/reports/student-attendance" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-calendar-check"></i>
         </div>
-      </div>
+        <div>
+          <div class="fw-bold">Student Attendance History</div>
+          <div class="small-muted">Check present, absent, and late records</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <a href="/payments/dues" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <div>
+          <div class="fw-bold">Payment Dues</div>
+          <div class="small-muted">Find unpaid and partial students</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <a href="/attendance/records" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-clipboard-data"></i>
+        </div>
+        <div>
+          <div class="fw-bold">Attendance Records</div>
+          <div class="small-muted">Search and export attendance records</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+      <a href="/payments" class="quick-action-card">
+        <div class="quick-action-icon">
+          <i class="bi bi-file-earmark-spreadsheet"></i>
+        </div>
+        <div>
+          <div class="fw-bold">Payment Records</div>
+          <div class="small-muted">Search, filter, and export payments</div>
+        </div>
+      </a>
     </div>
 
   </div>

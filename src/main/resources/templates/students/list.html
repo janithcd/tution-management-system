@@ -1,27 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/head :: head('Students')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
-    <div class="d-flex justify-content-between mb-3">
-        <h2>Students</h2>
-        <a href="/students/new" class="btn btn-primary">Add Student</a>
-    </div>
-    <div class="form-card mb-4">
 
-        <form th:action="@{/students}" method="get" class="row g-3">
+<div class="container page-shell">
 
-            <div class="col-md-4">
-                <label class="form-label">Search</label>
-                <input type="text"
-                       name="keyword"
-                       class="form-control"
-                       placeholder="Name, code, phone, school"
-                       th:value="${keyword}">
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Student Management</h2>
+                <p class="page-subtitle">Manage O/L and A/L student records, contact details, school information, and status.</p>
             </div>
 
-            <div class="col-md-3">
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/students/new" class="btn btn-soft">
+                    <i class="bi bi-person-plus"></i>
+                    Add Student
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="form-card mb-4">
+        <form th:action="@{/students}" method="get" class="row g-3">
+
+            <input type="hidden" name="page" value="0">
+
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           placeholder="Code, name, phone, parent phone, school"
+                           th:value="${keyword}">
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Education Level</label>
                 <select name="educationLevel" class="form-select">
                     <option value="">All Levels</option>
@@ -33,7 +58,7 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-lg-2 col-md-6">
                 <label class="form-label">Grade</label>
                 <select name="grade" class="form-select">
                     <option value="">All Grades</option>
@@ -45,8 +70,8 @@
                 </select>
             </div>
 
-            <div class="col-md-2">
-                <label class="form-label">Page Size</label>
+            <div class="col-lg-1 col-md-6">
+                <label class="form-label">Size</label>
                 <select name="size" class="form-select">
                     <option value="5" th:selected="${pageSize == 5}">5</option>
                     <option value="10" th:selected="${pageSize == 10}">10</option>
@@ -55,107 +80,279 @@
                 </select>
             </div>
 
-            <div class="col-md-2 d-flex align-items-end">
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
-                    <a href="/students" class="btn btn-secondary">Reset</a>
+            <div class="col-lg-3 col-md-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i>
+                        Apply Filters
+                    </button>
+
+                    <a href="/students" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
                 </div>
             </div>
-            <input type="hidden" name="page" value="0">
+
         </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Student List</h5>
+                <p class="small-muted mb-0">Showing filtered student records</p>
+            </div>
+
+            <div class="status-pill status-primary" th:if="${totalItems > 0}">
+                <i class="bi bi-people"></i>
+                <span th:text="${totalItems}"></span>
+                Students
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student</th>
+                    <th>Contact</th>
+                    <th>School</th>
+                    <th>Level</th>
+                    <th>Grade</th>
+                    <th>Stream</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="student : ${students}">
+                    <td>
+                        <span class="fw-bold" th:text="${student.id}"></span>
+                    </td>
+
+                    <td>
+                        <div class="fw-bold" th:text="${student.fullName}"></div>
+                        <div class="small-muted" th:text="${student.studentCode}"></div>
+                    </td>
+
+                    <td>
+                        <div>
+                            <i class="bi bi-telephone me-1 text-muted"></i>
+                            <span th:text="${student.phone}"></span>
+                        </div>
+                        <div class="small-muted">
+                            Parent:
+                            <span th:text="${student.parentPhone}"></span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${student.school}"></span>
+                    </td>
+
+                    <td>
+                        <span class="status-pill status-primary"
+                              th:text="${student.educationLevel}">
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${student.grade}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${student.stream}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${student.joinedDate}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${student.status.name() == 'ACTIVE'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${student.status}"></span>
+                        </span>
+
+                        <span th:if="${student.status.name() == 'INACTIVE'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${student.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <div class="d-flex gap-2 flex-wrap">
+
+                            <a th:href="@{/students/edit/{id}(id=${student.id})}"
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square"></i>
+                                Edit
+                            </a>
+
+                            <a th:href="@{/students/delete/{id}(id=${student.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are you sure you want to delete this student?');">
+                                <i class="bi bi-trash"></i>
+                                Delete
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty Message -->
+    <div th:if="${#lists.isEmpty(students)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No students found.
+    </div>
+
+    <!-- Better Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination-wrapper mt-4">
+
+        <div class="pagination-summary">
+            Showing page
+            <strong th:text="${currentPage + 1}"></strong>
+            of
+            <strong th:text="${totalPages}"></strong>
+            |
+            Total students:
+            <strong th:text="${totalItems}"></strong>
+        </div>
+
+        <nav>
+            <ul class="pagination app-pagination justify-content-center flex-wrap">
+
+                <!-- First Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}">
+                        <i class="bi bi-chevron-double-left"></i>
+                        First
+                    </a>
+                </li>
+
+                <!-- Previous Page -->
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=${currentPage - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}">
+                        <i class="bi bi-chevron-left"></i>
+                        Prev
+                    </a>
+                </li>
+
+                <!-- First Number -->
+                <li class="page-item" th:if="${startPage > 0}">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=0,
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}">
+                        1
+                    </a>
+                </li>
+
+                <!-- Left Dots -->
+                <li class="page-item disabled" th:if="${startPage > 1}">
+                    <span class="page-link page-dots">...</span>
+                </li>
+
+                <!-- Middle Numbers -->
+                <li class="page-item"
+                    th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                    th:classappend="${i == currentPage} ? 'active'">
+
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=${i},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}"
+                       th:text="${i + 1}">
+                    </a>
+                </li>
+
+                <!-- Right Dots -->
+                <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
+                    <span class="page-link page-dots">...</span>
+                </li>
+
+                <!-- Last Number -->
+                <li class="page-item" th:if="${endPage < totalPages - 1}">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}"
+                       th:text="${totalPages}">
+                    </a>
+                </li>
+
+                <!-- Next Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=${currentPage + 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}">
+                        Next
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+
+                <!-- Last Page -->
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
+                    <a class="page-link"
+                       th:href="@{/students(
+                            page=${totalPages - 1},
+                            size=${pageSize},
+                            keyword=${keyword},
+                            educationLevel=${selectedEducationLevel},
+                            grade=${selectedGrade}
+                       )}">
+                        Last
+                        <i class="bi bi-chevron-double-right"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
 
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Level</th>
-            <th>Grade</th>
-            <th>Stream</th>
-            <th>Phone</th>
-            <th>Parent Phone</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <tr th:each="student : ${students}">
-            <td th:text="${student.studentCode}"></td>
-            <td th:text="${student.fullName}"></td>
-            <td th:text="${student.educationLevel}"></td>
-            <td th:text="${student.grade}"></td>
-            <td th:text="${student.stream}"></td>
-            <td th:text="${student.phone}"></td>
-            <td th:text="${student.parentPhone}"></td>
-            <td th:text="${student.status}"></td>
-            <td>
-                <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-sm btn-warning">Edit</a>
-                <a th:href="@{/students/delete/{id}(id=${student.id})}" class="btn btn-sm btn-danger"
-                   onclick="return confirm('Are you sure?')">Delete</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <nav th:if="${totalPages > 1}" class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/students(
-                    page=${currentPage - 1},
-                    size=${pageSize},
-                    keyword=${keyword},
-                    educationLevel=${selectedEducationLevel},
-                    grade=${selectedGrade}
-               )}">
-                    Previous
-                </a>
-            </li>
-
-            <li class="page-item"
-                th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                th:classappend="${i == currentPage} ? 'active'">
-
-                <a class="page-link"
-                   th:href="@{/students(
-                    page=${i},
-                    size=${pageSize},
-                    keyword=${keyword},
-                    educationLevel=${selectedEducationLevel},
-                    grade=${selectedGrade}
-               )}"
-                   th:text="${i + 1}">
-                </a>
-            </li>
-
-            <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/students(
-                    page=${currentPage + 1},
-                    size=${pageSize},
-                    keyword=${keyword},
-                    educationLevel=${selectedEducationLevel},
-                    grade=${selectedGrade}
-               )}">
-                    Next
-                </a>
-            </li>
-
-        </ul>
-    </nav>
-
-    <div class="text-center text-muted mt-2">
-        Showing page
-        <span th:text="${currentPage + 1}"></span>
-        of
-        <span th:text="${totalPages}"></span>
-        |
-        Total students:
-        <span th:text="${totalItems}"></span>
-    </div>
 </div>
 
 </body>

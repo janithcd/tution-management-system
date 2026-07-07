@@ -1,42 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Enrollment Form')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Enroll Student to Batch</h2>
+<div class="container page-shell">
 
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">New Student Enrollment</h2>
+                <p class="page-subtitle">
+                    Assign a student to a class batch. Duplicate enrollments will be prevented automatically.
+                </p>
+            </div>
 
-    <form th:action="@{/enrollments/save}" method="post">
-
-        <div class="mb-3">
-            <label class="form-label">Select Student</label>
-            <select name="studentId" class="form-select" required>
-                <option value="">Select Student</option>
-                <option th:each="student : ${students}"
-                        th:value="${student.id}"
-                        th:text="${student.studentCode + ' - ' + student.fullName + ' - ' + student.educationLevel + ' ' + student.grade}">
-                </option>
-            </select>
+            <a href="/enrollments" class="btn btn-soft">
+                <i class="bi bi-arrow-left"></i>
+                Back to Enrollments
+            </a>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Select Batch</label>
-            <select name="batchId" class="form-select" required>
-                <option value="">Select Batch</option>
-                <option th:each="batch : ${batches}"
-                        th:value="${batch.id}"
-                        th:text="${batch.batchName + ' - ' + batch.subject + ' - Rs. ' + batch.monthlyFee}">
-                </option>
-            </select>
-        </div>
+    <!-- Form Card -->
+    <div class="form-card">
 
-        <button type="submit" class="btn btn-success">Enroll Student</button>
-        <a href="/enrollments" class="btn btn-secondary">Cancel</a>
+        <form th:action="@{/enrollments/save}" method="post" class="row g-4">
 
-    </form>
+            <!-- Student Selection -->
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-person-check me-2"></i>
+                    Enrollment Details
+                </h5>
+            </div>
+
+            <div class="col-lg-6 col-md-12">
+                <label class="form-label">Select Student</label>
+                <select name="studentId" class="form-select" required>
+                    <option value="">Choose a student</option>
+
+                    <option th:each="student : ${students}"
+                            th:value="${student.id}"
+                            th:text="${student.studentCode + ' - ' + student.fullName + ' | ' + student.educationLevel + ' | ' + student.grade}">
+                    </option>
+                </select>
+
+                <div class="small-muted mt-2">
+                    Select the student who should be enrolled into a class batch.
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-12">
+                <label class="form-label">Select Batch</label>
+                <select name="batchId" class="form-select" required>
+                    <option value="">Choose a batch</option>
+
+                    <option th:each="batch : ${batches}"
+                            th:value="${batch.id}"
+                            th:text="${batch.batchName + ' | ' + batch.subject + ' | Rs. ' + batch.monthlyFee}">
+                    </option>
+                </select>
+
+                <div class="small-muted mt-2">
+                    Make sure the selected batch matches the student's level, grade, and stream.
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="col-12">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-bold mb-1">Important Enrollment Rule</div>
+                        <div class="small-muted">
+                            A student should only be enrolled into matching batches. For example, an O/L Grade 10 student
+                            should be enrolled into an O/L Grade 10 batch. A/L students should match the correct stream.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-12">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i>
+                        Save Enrollment
+                    </button>
+
+                    <a href="/enrollments" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

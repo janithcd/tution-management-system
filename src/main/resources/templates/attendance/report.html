@@ -1,43 +1,222 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: head('Students')}"></head>
+
+<head th:replace="~{fragments/head :: head('Attendance Report')}"></head>
+
 <body>
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div class="container mt-4">
 
-    <h2>Attendance Report</h2>
+<div class="container page-shell">
 
-    <div class="alert alert-info">
-        <strong>Batch:</strong> <span th:text="${batch.batchName}"></span><br>
-        <strong>Date:</strong> <span th:text="${selectedDate}"></span>
+    <!-- Hero -->
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Attendance Report</h2>
+                <p class="page-subtitle">
+                    View marked attendance records by class batch and date.
+                </p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/attendance" class="btn btn-soft">
+                    <i class="bi bi-calendar-check"></i>
+                    Mark Attendance
+                </a>
+
+                <a href="/attendance/records" class="btn btn-success">
+                    <i class="bi bi-clipboard-data"></i>
+                    All Records
+                </a>
+            </div>
+        </div>
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Student Code</th>
-            <th>Student Name</th>
-            <th>Attendance Status</th>
-            <th>Marked At</th>
-        </tr>
-        </thead>
+    <!-- Filter Form -->
+    <div class="form-card mb-4">
 
-        <tbody>
-        <tr th:each="record : ${records}">
-            <td th:text="${record.enrollment.student.studentCode}"></td>
-            <td th:text="${record.enrollment.student.fullName}"></td>
-            <td th:text="${record.status}"></td>
-            <td th:text="${record.markedAt}"></td>
-        </tr>
-        </tbody>
-    </table>
+        <form th:action="@{/attendance/report}" method="get" class="row g-4">
 
-    <div th:if="${#lists.isEmpty(records)}" class="alert alert-warning">
-        No attendance records found for this batch and date.
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-funnel me-2"></i>
+                    Report Filters
+                </h5>
+            </div>
+
+            <div class="col-lg-8 col-md-12">
+                <label class="form-label">Select Batch</label>
+                <select name="batchId" class="form-select" required>
+                    <option value="">Choose a batch</option>
+
+                    <option th:each="batch : ${batches}"
+                            th:value="${batch.id}"
+                            th:text="${batch.batchName + ' | ' + batch.subject + ' | ' + batch.dayOfWeek}"
+                            th:selected="${selectedBatchId != null and selectedBatchId == batch.id}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <label class="form-label">Attendance Date</label>
+                <input type="date"
+                       name="attendanceDate"
+                       class="form-control"
+                       th:value="${attendanceDate}"
+                       required>
+            </div>
+
+            <div class="col-12">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        View Report
+                    </button>
+
+                    <a href="/attendance/report" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
     </div>
 
-    <a href="/attendance" class="btn btn-primary">Mark Another Attendance</a>
-    <a href="/enrollments" class="btn btn-secondary">Enrollments</a>
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4" th:if="${!#lists.isEmpty(records)}">
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div class="stat-label">Report Date</div>
+                <div class="stat-value fs-3" th:text="${attendanceDate}">Date</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-label">Total Records</div>
+                <div class="stat-value" th:text="${#lists.size(records)}">0</div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-12">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-journal-check"></i>
+                </div>
+                <div class="stat-label">Selected Batch ID</div>
+                <div class="stat-value" th:text="${selectedBatchId}">0</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Table -->
+    <div class="table-card" th:if="${!#lists.isEmpty(records)}">
+
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Attendance Report List</h5>
+                <p class="small-muted mb-0">Students marked for the selected batch and date</p>
+            </div>
+
+            <div class="status-pill status-primary">
+                <i class="bi bi-list-check"></i>
+                <span th:text="${#lists.size(records)}"></span>
+                Records
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Batch</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Marked At</th>
+                    <th>Remarks</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="record : ${records}">
+
+                    <td>
+                        <div class="fw-bold" th:text="${record.enrollment.student.fullName}"></div>
+                        <div class="small-muted" th:text="${record.enrollment.student.studentCode}"></div>
+                    </td>
+
+                    <td>
+                        <div class="fw-semibold" th:text="${record.enrollment.batch.batchName}"></div>
+                        <div class="small-muted">
+                            <span th:text="${record.enrollment.batch.dayOfWeek}"></span>
+                            |
+                            <span th:text="${record.enrollment.batch.startTime}"></span>
+                            -
+                            <span th:text="${record.enrollment.batch.endTime}"></span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${record.enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        <span class="fw-bold" th:text="${record.attendanceDate}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${record.status.name() == 'PRESENT'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'ABSENT'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+
+                        <span th:if="${record.status.name() == 'LATE'}"
+                              class="status-pill status-warning">
+                            <i class="bi bi-clock-history"></i>
+                            <span th:text="${record.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.markedAt}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${record.remarks}"></span>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Empty Message -->
+    <div th:if="${#lists.isEmpty(records)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No attendance report records found. Select a batch and date to view attendance.
+    </div>
 
 </div>
 

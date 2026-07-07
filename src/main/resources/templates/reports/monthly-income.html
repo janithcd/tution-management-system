@@ -7,76 +7,243 @@
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container">
+<div class="container page-shell">
 
-    <div class="mb-4">
-        <h2 class="page-title">Monthly Income Report</h2>
-        <p class="page-subtitle">Filter payments by month and year</p>
+    <div class="page-hero">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="page-title">Monthly Income Report</h2>
+                <p class="page-subtitle">
+                    View all payments and income summary for the selected month.
+                </p>
+            </div>
+
+            <a href="/reports" class="btn btn-soft">
+                <i class="bi bi-arrow-left"></i>
+                Back to Reports
+            </a>
+        </div>
     </div>
 
     <div class="form-card mb-4">
-        <form th:action="@{/reports/monthly-income}" method="get" class="row g-3">
+        <form th:action="@{/reports/monthly-income}" method="get" class="row g-4">
 
-            <div class="col-md-4">
-                <label class="form-label">Month</label>
-                <select name="month" class="form-select" required>
-                    <option th:each="m : ${#numbers.sequence(1,12)}"
-                            th:value="${m}"
-                            th:text="${m}"
-                            th:selected="${m == selectedMonth}">
+            <div class="col-12">
+                <h5 class="section-title">
+                    <i class="bi bi-funnel me-2"></i>
+                    Report Filters
+                </h5>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Payment Month</label>
+                <select name="paymentMonth" class="form-select" required>
+                    <option th:each="month : ${#numbers.sequence(1,12)}"
+                            th:value="${month}"
+                            th:text="${month}"
+                            th:selected="${month == selectedMonth}">
                     </option>
                 </select>
             </div>
 
-            <div class="col-md-4">
-                <label class="form-label">Year</label>
-                <input type="number" name="year" class="form-control" th:value="${selectedYear}" required>
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Payment Year</label>
+                <input type="number"
+                       name="paymentYear"
+                       class="form-control"
+                       th:value="${selectedYear}"
+                       min="2020"
+                       max="2100"
+                       required>
             </div>
 
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary">Search</button>
+            <div class="col-lg-4 col-md-12 d-flex align-items-end">
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                        View Report
+                    </button>
+
+                    <a href="/reports/monthly-income" class="btn btn-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Reset
+                    </a>
+                </div>
             </div>
 
         </form>
     </div>
 
-    <div class="alert alert-success">
-        <strong>Total Income:</strong>
-        Rs. <span th:text="${totalIncome}">0</span>
+    <div class="row g-4 mb-4">
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <div class="stat-label">Selected Month</div>
+                <div class="stat-value">
+                    <span th:text="${selectedMonth}">0</span>
+                    /
+                    <span th:text="${selectedYear}">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+                <div class="stat-label">Monthly Income</div>
+                <div class="stat-value fs-3">
+                    Rs.
+                    <span th:text="${monthlyIncome}">0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">Paid</div>
+                <div class="stat-value" th:text="${paidCount}">0</div>
+                <span class="status-pill status-success">
+                    <i class="bi bi-check-circle"></i>
+                    PAID
+                </span>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">Partial</div>
+                <div class="stat-value" th:text="${partialCount}">0</div>
+                <span class="status-pill status-warning">
+                    <i class="bi bi-exclamation-circle"></i>
+                    PARTIAL
+                </span>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-4">
+            <div class="stat-card">
+                <div class="stat-label">Unpaid</div>
+                <div class="stat-value" th:text="${unpaidCount}">0</div>
+                <span class="status-pill status-danger">
+                    <i class="bi bi-x-circle"></i>
+                    UNPAID
+                </span>
+            </div>
+        </div>
+
     </div>
 
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Student Code</th>
-            <th>Student Name</th>
-            <th>Batch</th>
-            <th>Expected</th>
-            <th>Paid</th>
-            <th>Balance</th>
-            <th>Status</th>
-            <th>Method</th>
-            <th>Payment Date</th>
-        </tr>
-        </thead>
+    <div class="table-card" th:if="${!#lists.isEmpty(payments)}">
 
-        <tbody>
-        <tr th:each="payment : ${payments}">
-            <td th:text="${payment.enrollment.student.studentCode}"></td>
-            <td th:text="${payment.enrollment.student.fullName}"></td>
-            <td th:text="${payment.enrollment.batch.batchName}"></td>
-            <td th:text="${payment.expectedAmount}"></td>
-            <td th:text="${payment.paidAmount}"></td>
-            <td th:text="${payment.balanceAmount}"></td>
-            <td th:text="${payment.status}"></td>
-            <td th:text="${payment.paymentMethod}"></td>
-            <td th:text="${payment.paymentDate}"></td>
-        </tr>
-        </tbody>
-    </table>
+        <div class="table-card-header">
+            <div>
+                <h5 class="mb-1 fw-bold">Payment List</h5>
+                <p class="small-muted mb-0">Payments recorded for the selected month</p>
+            </div>
 
-    <div th:if="${#lists.isEmpty(payments)}" class="alert alert-warning">
-        No payments found for this month.
+            <div class="status-pill status-primary">
+                <i class="bi bi-list-check"></i>
+                <span th:text="${#lists.size(payments)}"></span>
+                Payments
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Student</th>
+                    <th>Batch</th>
+                    <th>Subject</th>
+                    <th>Expected</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="payment : ${payments}">
+
+                    <td>
+                        <span class="fw-bold" th:text="${payment.id}"></span>
+                    </td>
+
+                    <td>
+                        <div class="fw-bold" th:text="${payment.enrollment.student.fullName}"></div>
+                        <div class="small-muted" th:text="${payment.enrollment.student.studentCode}"></div>
+                    </td>
+
+                    <td>
+                        <div class="fw-semibold" th:text="${payment.enrollment.batch.batchName}"></div>
+                        <div class="small-muted" th:text="${payment.enrollment.batch.teacherName}"></div>
+                    </td>
+
+                    <td>
+                        <span class="fw-semibold" th:text="${payment.enrollment.batch.subject}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${payment.expectedAmount}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${payment.paidAmount}"></span>
+                    </td>
+
+                    <td>
+                        Rs.
+                        <span class="fw-bold" th:text="${payment.balanceAmount}"></span>
+                    </td>
+
+                    <td>
+                        <span th:if="${payment.status.name() == 'PAID'}"
+                              class="status-pill status-success">
+                            <i class="bi bi-check-circle"></i>
+                            <span th:text="${payment.status}"></span>
+                        </span>
+
+                        <span th:if="${payment.status.name() == 'PARTIAL'}"
+                              class="status-pill status-warning">
+                            <i class="bi bi-exclamation-circle"></i>
+                            <span th:text="${payment.status}"></span>
+                        </span>
+
+                        <span th:if="${payment.status.name() == 'UNPAID'}"
+                              class="status-pill status-danger">
+                            <i class="bi bi-x-circle"></i>
+                            <span th:text="${payment.status}"></span>
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${payment.paymentMethod}"></span>
+                    </td>
+
+                    <td>
+                        <span class="small-muted" th:text="${payment.paymentDate}"></span>
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div th:if="${#lists.isEmpty(payments)}" class="alert alert-warning mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        No payment records found for this month.
     </div>
 
 </div>

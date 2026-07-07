@@ -10,13 +10,10 @@ import lk.janith.tuitionmanagement.repository.EnrollmentRepository;
 import lk.janith.tuitionmanagement.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import lk.janith.tuitionmanagement.entity.Payment;
-import lk.janith.tuitionmanagement.enums.PaymentStatus;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import lk.janith.tuitionmanagement.enums.PaymentStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -47,6 +44,20 @@ public class PaymentService {
     ) {
         return paymentRepository.searchPayments(keyword, paymentMonth, paymentYear, status, pageable);
     }
+    public List<Payment> searchPaymentsForExport(
+            String keyword,
+            Integer paymentMonth,
+            Integer paymentYear,
+            PaymentStatus status
+    ) {
+        return paymentRepository.searchPaymentsForExport(
+                keyword,
+                paymentMonth,
+                paymentYear,
+                status
+        );
+    }
+
     public long getPendingPaymentCount(Integer paymentMonth, Integer paymentYear) {
 
         return getPaymentDuesForMonth(paymentMonth, paymentYear)
