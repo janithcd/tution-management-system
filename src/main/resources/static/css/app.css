@@ -617,6 +617,29 @@ canvas {
         justify-content: center;
         font-size: 1.25rem;
     }
+    /* Validation Errors */
+
+    .field-error {
+        color: var(--danger);
+        font-size: 0.84rem;
+        font-weight: 700;
+        margin-top: 6px;
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: var(--danger);
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.10);
+    }
+
+    .validation-summary {
+        background: var(--danger-soft);
+        color: var(--danger);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        font-weight: 700;
+        border: 1px solid rgba(220, 38, 38, 0.14);
+    }
 
     @media (max-width: 768px) {
         .pagination-wrapper {

@@ -14,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
+
 @Controller
 @RequestMapping("/students")
 public class StudentController {
@@ -102,8 +105,18 @@ public class StudentController {
     }
 
 
+    // Save
     @PostMapping("/save")
-    public String saveStudent(@ModelAttribute Student student) {
+    public String saveStudent(
+            @Valid @ModelAttribute("student") Student student,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            addStudentFormData(model);
+            return "students/form";
+        }
+
         studentService.saveStudent(student);
 
         return "redirect:/students";

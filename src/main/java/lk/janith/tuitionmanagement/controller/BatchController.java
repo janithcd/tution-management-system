@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 import java.time.DayOfWeek;
 
@@ -112,8 +114,18 @@ public class BatchController {
     }
 
 
+    // Save
     @PostMapping("/save")
-    public String saveBatch(@ModelAttribute Batch batch) {
+    public String saveBatch(
+            @Valid @ModelAttribute("batch") Batch batch,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        if (bindingResult.hasErrors()) {
+            addBatchFormData(model);
+            return "batches/form";
+        }
+
         batchService.saveBatch(batch);
 
         return "redirect:/batches";

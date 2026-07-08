@@ -32,10 +32,18 @@
     <!-- Form Card -->
     <div class="form-card">
 
-        <form th:action="@{/students/save}" th:object="${student}" method="post" class="row g-4">
+        <form th:action="@{/students/save}" th:object="${student}" method="post" class="row g-4" novalidate>
 
             <input type="hidden" th:field="*{id}">
             <input type="hidden" th:field="*{studentCode}">
+
+            <!-- Validation Summary -->
+            <div class="col-12" th:if="${#fields.hasAnyErrors()}">
+                <div class="validation-summary">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Please fix the errors below before saving.
+                </div>
+            </div>
 
             <!-- Personal Details -->
             <div class="col-12">
@@ -50,8 +58,15 @@
                 <input type="text"
                        th:field="*{fullName}"
                        class="form-control"
+                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
                        placeholder="Enter student's full name"
                        required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('fullName')}"
+                     th:errors="*{fullName}">
+                    Full name error
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-6">
@@ -59,8 +74,15 @@
                 <input type="text"
                        th:field="*{phone}"
                        class="form-control"
-                       placeholder="Student phone"
+                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                       placeholder="0712345678"
                        required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('phone')}"
+                     th:errors="*{phone}">
+                    Phone error
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-6">
@@ -68,8 +90,15 @@
                 <input type="text"
                        th:field="*{parentPhone}"
                        class="form-control"
-                       placeholder="Parent phone"
+                       th:classappend="${#fields.hasErrors('parentPhone')} ? 'is-invalid' : ''"
+                       placeholder="0712345678"
                        required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('parentPhone')}"
+                     th:errors="*{parentPhone}">
+                    Parent phone error
+                </div>
             </div>
 
             <div class="col-lg-6 col-md-12">
@@ -77,7 +106,15 @@
                 <input type="text"
                        th:field="*{school}"
                        class="form-control"
-                       placeholder="Enter school name">
+                       th:classappend="${#fields.hasErrors('school')} ? 'is-invalid' : ''"
+                       placeholder="Enter school name"
+                       required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('school')}"
+                     th:errors="*{school}">
+                    School error
+                </div>
             </div>
 
             <div class="col-lg-6 col-md-12">
@@ -85,7 +122,14 @@
                 <input type="text"
                        th:field="*{address}"
                        class="form-control"
+                       th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''"
                        placeholder="Enter address">
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('address')}"
+                     th:errors="*{address}">
+                    Address error
+                </div>
             </div>
 
             <!-- Academic Details -->
@@ -98,37 +142,65 @@
 
             <div class="col-lg-3 col-md-6">
                 <label class="form-label">Education Level</label>
-                <select th:field="*{educationLevel}" class="form-select" required>
+                <select th:field="*{educationLevel}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('educationLevel')} ? 'is-invalid' : ''"
+                        required>
                     <option value="">Select Level</option>
                     <option th:each="level : ${educationLevels}"
                             th:value="${level}"
                             th:text="${level}">
                     </option>
                 </select>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('educationLevel')}"
+                     th:errors="*{educationLevel}">
+                    Education level error
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-6">
                 <label class="form-label">Grade</label>
-                <select th:field="*{grade}" class="form-select" required>
+                <select th:field="*{grade}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('grade')} ? 'is-invalid' : ''"
+                        required>
                     <option value="">Select Grade</option>
                     <option th:each="grade : ${grades}"
                             th:value="${grade}"
                             th:text="${grade}">
                     </option>
                 </select>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('grade')}"
+                     th:errors="*{grade}">
+                    Grade error
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-6">
                 <label class="form-label">Stream</label>
-                <select th:field="*{stream}" class="form-select" required>
+                <select th:field="*{stream}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('stream')} ? 'is-invalid' : ''"
+                        required>
                     <option value="">Select Stream</option>
                     <option th:each="stream : ${streams}"
                             th:value="${stream}"
                             th:text="${stream}">
                     </option>
                 </select>
+
                 <div class="small-muted mt-1">
                     Use NONE for O/L students.
+                </div>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('stream')}"
+                     th:errors="*{stream}">
+                    Stream error
                 </div>
             </div>
 
@@ -137,18 +209,51 @@
                 <input type="date"
                        th:field="*{joinedDate}"
                        class="form-control"
+                       th:classappend="${#fields.hasErrors('joinedDate')} ? 'is-invalid' : ''"
                        required>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('joinedDate')}"
+                     th:errors="*{joinedDate}">
+                    Joined date error
+                </div>
             </div>
 
             <div class="col-lg-3 col-md-6">
                 <label class="form-label">Status</label>
-                <select th:field="*{status}" class="form-select" required>
+                <select th:field="*{status}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('status')} ? 'is-invalid' : ''"
+                        required>
                     <option value="">Select Status</option>
                     <option th:each="status : ${statuses}"
                             th:value="${status}"
                             th:text="${status}">
                     </option>
                 </select>
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('status')}"
+                     th:errors="*{status}">
+                    Status error
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="col-12">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-bold mb-1">Student Code</div>
+                        <div class="small-muted">
+                            Student code is generated automatically when adding a new student.
+                            Do not manually edit the student code.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Buttons -->
