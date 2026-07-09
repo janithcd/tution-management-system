@@ -10,6 +10,7 @@ import lk.janith.tuitionmanagement.repository.EnrollmentRepository;
 import lk.janith.tuitionmanagement.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,47 +90,83 @@ public class PaymentService {
             PaymentMethod paymentMethod,
             String remarks
     ) {
+        if (enrollmentId == null) {
+            throw new IllegalArgumentException("Please select an enrollment.");
+        }
+
+        if (paymentMonth == null) {
+            throw new IllegalArgumentException("Please select payment month.");
+        }
+
+        if (paymentYear == null) {
+            throw new IllegalArgumentException("Please enter payment year.");
+        }
+
+        if (paidAmount == null || paidAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Paid amount must be greater than 0.");
+        }
+
+        if (paymentMethod == null) {
+            throw new IllegalArgumentException("Please select payment method.");
+        }
+
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new RuntimeException("Selected enrollment not found."));
+
+        paymentRepository
+                .findByEnrollmentIdAndPaymentMonthAndPaymentYear(enrollmentId, paymentMonth, paymentYear)
+                .ifPresent(existingPayment -> {
+                    throw new IllegalStateException(
+                            "This enrollment already has a payment record for "
+                                    + getMonthName(paymentMonth) + " " + paymentYear + "."
+                    );
+                });
 
         BigDecimal expectedAmount = enrollment.getBatch().getMonthlyFee();
-
-        if (paidAmount == null) {
-            paidAmount = BigDecimal.ZERO;
-        }
-
         BigDecimal balanceAmount = expectedAmount.subtract(paidAmount);
 
-        if (balanceAmount.compareTo(BigDecimal.ZERO) < 0) {
-            balanceAmount = BigDecimal.ZERO;
-        }
-
-        PaymentStatus status;
-
-        if (paidAmount.compareTo(BigDecimal.ZERO) == 0) {
-            status = PaymentStatus.UNPAID;
-        } else if (paidAmount.compareTo(expectedAmount) >= 0) {
-            status = PaymentStatus.PAID;
-        } else {
-            status = PaymentStatus.PARTIAL;
-        }
-
-        Payment payment = paymentRepository
-                .findByEnrollmentIdAndPaymentMonthAndPaymentYear(enrollmentId, paymentMonth, paymentYear)
-                .orElse(new Payment());
-
+        Payment payment = new Payment();
         payment.setEnrollment(enrollment);
         payment.setPaymentMonth(paymentMonth);
         payment.setPaymentYear(paymentYear);
         payment.setExpectedAmount(expectedAmount);
         payment.setPaidAmount(paidAmount);
         payment.setBalanceAmount(balanceAmount);
-        payment.setStatus(status);
         payment.setPaymentMethod(paymentMethod);
         payment.setPaymentDate(LocalDate.now());
         payment.setRemarks(remarks);
+        payment.setStatus(calculatePaymentStatus(expectedAmount, paidAmount));
 
         return paymentRepository.save(payment);
+    }
+    private PaymentStatus calculatePaymentStatus(BigDecimal expectedAmount, BigDecimal paidAmount) {
+        if (paidAmount.compareTo(expectedAmount) >= 0) {
+            return PaymentStatus.PAID;
+        }
+
+        if (paidAmount.compareTo(BigDecimal.ZERO) > 0) {
+            return PaymentStatus.PARTIAL;
+        }
+
+        return PaymentStatus.UNPAID;
+    }
+
+    private String getMonthName(Integer month) {
+        return switch (month) {
+            case 1 -> "January";
+            case 2 -> "February";
+            case 3 -> "March";
+            case 4 -> "April";
+            case 5 -> "May";
+            case 6 -> "June";
+            case 7 -> "July";
+            case 8 -> "August";
+            case 9 -> "September";
+            case 10 -> "October";
+            case 11 -> "November";
+            case 12 -> "December";
+            default -> "Month " + month;
+        };
     }
 
     public List<PaymentDueDto> getPaymentDuesForMonth(Integer paymentMonth, Integer paymentYear) {

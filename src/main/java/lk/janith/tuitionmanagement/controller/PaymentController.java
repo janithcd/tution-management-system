@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -126,23 +127,59 @@ public class PaymentController {
 
     @PostMapping("/save")
     public String savePayment(
-            @RequestParam Long enrollmentId,
-            @RequestParam Integer paymentMonth,
-            @RequestParam Integer paymentYear,
-            @RequestParam BigDecimal paidAmount,
-            @RequestParam PaymentMethod paymentMethod,
-            @RequestParam(required = false) String remarks
+            @RequestParam(required = false) Long enrollmentId,
+            @RequestParam(required = false) Integer paymentMonth,
+            @RequestParam(required = false) Integer paymentYear,
+            @RequestParam(required = false) BigDecimal paidAmount,
+            @RequestParam(required = false) PaymentMethod paymentMethod,
+            @RequestParam(required = false) String remarks,
+            RedirectAttributes redirectAttributes
     ) {
-        paymentService.recordPayment(
-                enrollmentId,
-                paymentMonth,
-                paymentYear,
-                paidAmount,
-                paymentMethod,
-                remarks
-        );
+        try {
+            Payment payment = paymentService.recordPayment(
+                    enrollmentId,
+                    paymentMonth,
+                    paymentYear,
+                    paidAmount,
+                    paymentMethod,
+                    remarks
+            );
 
-        return "redirect:/payments";
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Payment recorded successfully. Receipt No: " + payment.getId()
+            );
+
+            return "redirect:/payments";
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+
+            redirectAttributes.addFlashAttribute("selectedEnrollmentId", enrollmentId);
+            redirectAttributes.addFlashAttribute("selectedPaymentMonth", paymentMonth);
+            redirectAttributes.addFlashAttribute("selectedPaymentYear", paymentYear);
+            redirectAttributes.addFlashAttribute("selectedPaidAmount", paidAmount);
+            redirectAttributes.addFlashAttribute("selectedPaymentMethod", paymentMethod);
+            redirectAttributes.addFlashAttribute("selectedRemarks", remarks);
+
+            return "redirect:/payments/new";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Payment could not be saved. Please check the selected enrollment and payment details."
+            );
+
+            redirectAttributes.addFlashAttribute("selectedEnrollmentId", enrollmentId);
+            redirectAttributes.addFlashAttribute("selectedPaymentMonth", paymentMonth);
+            redirectAttributes.addFlashAttribute("selectedPaymentYear", paymentYear);
+            redirectAttributes.addFlashAttribute("selectedPaidAmount", paidAmount);
+            redirectAttributes.addFlashAttribute("selectedPaymentMethod", paymentMethod);
+            redirectAttributes.addFlashAttribute("selectedRemarks", remarks);
+
+            return "redirect:/payments/new";
+        }
     }
 
 

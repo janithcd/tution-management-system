@@ -25,11 +25,20 @@
             </a>
         </div>
     </div>
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success app-alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
 
+    <div th:if="${errorMessage}" class="alert alert-danger app-alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
     <!-- Form Card -->
     <div class="form-card">
 
-        <form th:action="@{/payments/save}" method="post" class="row g-4">
+        <form th:action="@{/payments/save}" method="post" class="row g-4" novalidate>
 
             <!-- Payment Details -->
             <div class="col-12">
