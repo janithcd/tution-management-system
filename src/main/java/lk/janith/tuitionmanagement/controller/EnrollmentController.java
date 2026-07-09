@@ -15,6 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 
 @Controller
 @RequestMapping("/enrollments")
@@ -34,7 +37,6 @@ public class EnrollmentController {
         this.batchService = batchService;
     }
 
-
     @GetMapping
     public String listEnrollments(
             @RequestParam(required = false) String keyword,
@@ -46,26 +48,10 @@ public class EnrollmentController {
             @RequestParam(defaultValue = "10") int size,
             Model model
     ) {
-        EducationLevel selectedLevel = null;
-        Grade selectedGrade = null;
-        StreamType selectedStream = null;
-        EnrollmentStatus selectedStatus = null;
-
-        if (educationLevel != null && !educationLevel.isBlank()) {
-            selectedLevel = EducationLevel.valueOf(educationLevel);
-        }
-
-        if (grade != null && !grade.isBlank()) {
-            selectedGrade = Grade.valueOf(grade);
-        }
-
-        if (stream != null && !stream.isBlank()) {
-            selectedStream = StreamType.valueOf(stream);
-        }
-
-        if (status != null && !status.isBlank()) {
-            selectedStatus = EnrollmentStatus.valueOf(status);
-        }
+        EducationLevel selectedLevel = parseEducationLevel(educationLevel);
+        Grade selectedGrade = parseGrade(grade);
+        StreamType selectedStream = parseStream(stream);
+        EnrollmentStatus selectedStatus = parseStatus(status);
 
         Pageable pageable = PageRequest.of(
                 page,
@@ -120,47 +106,125 @@ public class EnrollmentController {
         return "enrollments/list";
     }
 
-
     @GetMapping("/new")
     public String showEnrollmentForm(Model model) {
         model.addAttribute("students", studentService.getAllStudents());
         model.addAttribute("batches", batchService.getAllBatches());
+        model.addAttribute("today", LocalDate.now());
 
         return "enrollments/form";
     }
 
-
     @PostMapping("/save")
     public String saveEnrollment(
-            @RequestParam Long studentId,
-            @RequestParam Long batchId
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) Long batchId,
+            @RequestParam(required = false) LocalDate enrolledDate,
+            RedirectAttributes redirectAttributes
     ) {
-        enrollmentService.enrollStudent(studentId, batchId);
+        try {
+            Enrollment enrollment = enrollmentService.enrollStudent(studentId, batchId, enrolledDate);
+
+            if (enrollment.getStatus() == EnrollmentStatus.ACTIVE) {
+                redirectAttributes.addFlashAttribute(
+                        "successMessage",
+                        "Student enrolled successfully."
+                );
+            }
+
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Enrollment could not be saved. Please check the selected student and batch."
+            );
+        }
 
         return "redirect:/enrollments";
     }
-
-
-    @GetMapping("/deactivate/{id}")
-    public String deactivateEnrollment(@PathVariable Long id) {
-        enrollmentService.deactivateEnrollment(id);
-
-        return "redirect:/enrollments";
-    }
-
 
     @GetMapping("/activate/{id}")
-    public String activateEnrollment(@PathVariable Long id) {
-        enrollmentService.activateEnrollment(id);
+    public String activateEnrollment(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            enrollmentService.activateEnrollment(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Enrollment activated successfully.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Enrollment could not be activated.");
+        }
 
         return "redirect:/enrollments";
     }
 
-  
-    @GetMapping("/delete/{id}")
-    public String deleteEnrollment(@PathVariable Long id) {
-        enrollmentService.deactivateEnrollment(id);
+    @GetMapping("/deactivate/{id}")
+    public String deactivateEnrollment(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            enrollmentService.deactivateEnrollment(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Enrollment deactivated successfully.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Enrollment could not be deactivated.");
+        }
 
         return "redirect:/enrollments";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteEnrollment(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            enrollmentService.deleteEnrollment(id);
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Enrollment deactivated successfully. It was not permanently deleted because related records may exist."
+            );
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Enrollment could not be deleted.");
+        }
+
+        return "redirect:/enrollments";
+    }
+
+    private EducationLevel parseEducationLevel(String value) {
+        try {
+            return value == null || value.isBlank() ? null : EducationLevel.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Grade parseGrade(String value) {
+        try {
+            return value == null || value.isBlank() ? null : Grade.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private StreamType parseStream(String value) {
+        try {
+            return value == null || value.isBlank() ? null : StreamType.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private EnrollmentStatus parseStatus(String value) {
+        try {
+            return value == null || value.isBlank() ? null : EnrollmentStatus.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

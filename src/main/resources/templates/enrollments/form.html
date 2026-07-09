@@ -29,9 +29,9 @@
     <!-- Form Card -->
     <div class="form-card">
 
-        <form th:action="@{/enrollments/save}" method="post" class="row g-4">
+        <form th:action="@{/enrollments/save}" method="post" class="row g-4" novalidate>
 
-            <!-- Student Selection -->
+            <!-- Enrollment Details -->
             <div class="col-12">
                 <h5 class="section-title">
                     <i class="bi bi-person-check me-2"></i>
@@ -39,9 +39,11 @@
                 </h5>
             </div>
 
+            <!-- Student Selection -->
             <div class="col-lg-6 col-md-12">
                 <label class="form-label">Select Student</label>
-                <select name="studentId" class="form-select" required>
+
+                <select name="studentId" class="form-select">
                     <option value="">Choose a student</option>
 
                     <option th:each="student : ${students}"
@@ -55,9 +57,11 @@
                 </div>
             </div>
 
+            <!-- Batch Selection -->
             <div class="col-lg-6 col-md-12">
                 <label class="form-label">Select Batch</label>
-                <select name="batchId" class="form-select" required>
+
+                <select name="batchId" class="form-select">
                     <option value="">Choose a batch</option>
 
                     <option th:each="batch : ${batches}"
@@ -68,6 +72,20 @@
 
                 <div class="small-muted mt-2">
                     Make sure the selected batch matches the student's level, grade, and stream.
+                </div>
+            </div>
+
+            <!-- Enrolled Date -->
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label">Enrolled Date</label>
+
+                <input type="date"
+                       name="enrolledDate"
+                       class="form-control"
+                       th:value="${today}">
+
+                <div class="small-muted mt-2">
+                    Leave today’s date unless this is an old enrollment.
                 </div>
             </div>
 
