@@ -91,10 +91,11 @@
                 <label class="form-label">Status</label>
                 <select name="status" class="form-select">
                     <option value="">All Status</option>
-                    <option th:each="status : ${paymentStatuses}"
-                            th:value="${status}"
-                            th:text="${status}"
-                            th:selected="${selectedStatus == status.name()}">
+
+                    <option th:each="paymentStatus : ${statuses}"
+                            th:value="${paymentStatus}"
+                            th:text="${paymentStatus}"
+                            th:selected="${selectedStatus == paymentStatus.name()}">
                     </option>
                 </select>
             </div>

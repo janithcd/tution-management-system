@@ -1,27 +1,22 @@
 package lk.janith.tuitionmanagement.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
-import lk.janith.tuitionmanagement.dto.PaymentDueDto;
 import lk.janith.tuitionmanagement.entity.Payment;
 import lk.janith.tuitionmanagement.enums.PaymentMethod;
 import lk.janith.tuitionmanagement.enums.PaymentStatus;
 import lk.janith.tuitionmanagement.service.EnrollmentService;
+import lk.janith.tuitionmanagement.service.PaymentReceiptPdfService;
 import lk.janith.tuitionmanagement.service.PaymentService;
-import lk.janith.tuitionmanagement.service.PdfReceiptService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -32,18 +27,17 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     private final EnrollmentService enrollmentService;
-    private final PdfReceiptService pdfReceiptService;
+    private final PaymentReceiptPdfService paymentReceiptPdfService;
 
     public PaymentController(
             PaymentService paymentService,
             EnrollmentService enrollmentService,
-            PdfReceiptService pdfReceiptService
+            PaymentReceiptPdfService paymentReceiptPdfService
     ) {
         this.paymentService = paymentService;
         this.enrollmentService = enrollmentService;
-        this.pdfReceiptService = pdfReceiptService;
+        this.paymentReceiptPdfService = paymentReceiptPdfService;
     }
-
 
     @GetMapping
     public String listPayments(
@@ -55,11 +49,7 @@ public class PaymentController {
             @RequestParam(defaultValue = "10") int size,
             Model model
     ) {
-        PaymentStatus selectedStatus = null;
-
-        if (status != null && !status.isBlank()) {
-            selectedStatus = PaymentStatus.valueOf(status);
-        }
+        PaymentStatus selectedStatus = parsePaymentStatus(status);
 
         Pageable pageable = PageRequest.of(
                 page,
@@ -95,7 +85,11 @@ public class PaymentController {
         model.addAttribute("selectedPaymentMonth", paymentMonth);
         model.addAttribute("selectedPaymentYear", paymentYear);
         model.addAttribute("selectedStatus", status);
+
+
+        model.addAttribute("statuses", PaymentStatus.values());
         model.addAttribute("paymentStatuses", PaymentStatus.values());
+
 
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
@@ -108,22 +102,28 @@ public class PaymentController {
         return "payments/list";
     }
 
-
     @GetMapping("/new")
     public String showPaymentForm(Model model) {
+        LocalDate today = LocalDate.now();
+
         model.addAttribute("enrollments", enrollmentService.getActiveEnrollments());
 
-
-        model.addAttribute("methods", PaymentMethod.values());
         model.addAttribute("paymentMethods", PaymentMethod.values());
+        model.addAttribute("methods", PaymentMethod.values());
 
-        model.addAttribute("currentMonth", LocalDate.now().getMonthValue());
-        model.addAttribute("currentYear", LocalDate.now().getYear());
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("currentMonth", today.getMonthValue());
+        model.addAttribute("currentYear", today.getYear());
+
+        if (!model.containsAttribute("selectedPaymentMonth")) {
+            model.addAttribute("selectedPaymentMonth", today.getMonthValue());
+        }
+
+        if (!model.containsAttribute("selectedPaymentYear")) {
+            model.addAttribute("selectedPaymentYear", today.getYear());
+        }
 
         return "payments/form";
     }
-
 
     @PostMapping("/save")
     public String savePayment(
@@ -147,7 +147,7 @@ public class PaymentController {
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
-                    "Payment recorded successfully. Receipt No: " + payment.getId()
+                    "Payment recorded successfully. Receipt No: REC-" + String.format("%05d", payment.getId())
             );
 
             return "redirect:/payments";
@@ -155,13 +155,15 @@ public class PaymentController {
         } catch (IllegalStateException | IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
 
-
-            redirectAttributes.addFlashAttribute("selectedEnrollmentId", enrollmentId);
-            redirectAttributes.addFlashAttribute("selectedPaymentMonth", paymentMonth);
-            redirectAttributes.addFlashAttribute("selectedPaymentYear", paymentYear);
-            redirectAttributes.addFlashAttribute("selectedPaidAmount", paidAmount);
-            redirectAttributes.addFlashAttribute("selectedPaymentMethod", paymentMethod);
-            redirectAttributes.addFlashAttribute("selectedRemarks", remarks);
+            keepPaymentFormValues(
+                    redirectAttributes,
+                    enrollmentId,
+                    paymentMonth,
+                    paymentYear,
+                    paidAmount,
+                    paymentMethod,
+                    remarks
+            );
 
             return "redirect:/payments/new";
 
@@ -171,79 +173,89 @@ public class PaymentController {
                     "Payment could not be saved. Please check the selected enrollment and payment details."
             );
 
-            redirectAttributes.addFlashAttribute("selectedEnrollmentId", enrollmentId);
-            redirectAttributes.addFlashAttribute("selectedPaymentMonth", paymentMonth);
-            redirectAttributes.addFlashAttribute("selectedPaymentYear", paymentYear);
-            redirectAttributes.addFlashAttribute("selectedPaidAmount", paidAmount);
-            redirectAttributes.addFlashAttribute("selectedPaymentMethod", paymentMethod);
-            redirectAttributes.addFlashAttribute("selectedRemarks", remarks);
+            keepPaymentFormValues(
+                    redirectAttributes,
+                    enrollmentId,
+                    paymentMonth,
+                    paymentYear,
+                    paidAmount,
+                    paymentMethod,
+                    remarks
+            );
 
             return "redirect:/payments/new";
         }
     }
 
-
     @GetMapping("/dues")
-    public String showPaymentDues(
+    public String paymentDues(
             @RequestParam(required = false) Integer paymentMonth,
             @RequestParam(required = false) Integer paymentYear,
             @RequestParam(required = false) Integer month,
             @RequestParam(required = false) Integer year,
             Model model
     ) {
-        Integer selectedMonth = paymentMonth != null ? paymentMonth : month;
-        Integer selectedYear = paymentYear != null ? paymentYear : year;
+        LocalDate today = LocalDate.now();
 
-        if (selectedMonth == null) {
-            selectedMonth = LocalDate.now().getMonthValue();
-        }
+        int selectedMonth = paymentMonth != null
+                ? paymentMonth
+                : month != null ? month : today.getMonthValue();
 
-        if (selectedYear == null) {
-            selectedYear = LocalDate.now().getYear();
-        }
+        int selectedYear = paymentYear != null
+                ? paymentYear
+                : year != null ? year : today.getYear();
 
-        List<PaymentDueDto> dues = paymentService.getPaymentDuesForMonth(
-                selectedMonth,
-                selectedYear
-        );
+        var dues = paymentService.getPaymentDuesForMonth(selectedMonth, selectedYear);
+
+        model.addAttribute("dues", dues);
+
+        model.addAttribute("paymentMonth", selectedMonth);
+        model.addAttribute("paymentYear", selectedYear);
 
         model.addAttribute("selectedMonth", selectedMonth);
         model.addAttribute("selectedYear", selectedYear);
-        model.addAttribute("dues", dues);
+
+        model.addAttribute("selectedPaymentMonth", selectedMonth);
+        model.addAttribute("selectedPaymentYear", selectedYear);
+
+        model.addAttribute("currentYear", today.getYear());
 
         return "payments/dues";
     }
 
-
-    @GetMapping({"/receipt/{id}", "/{id}/receipt"})
-    public ResponseEntity<byte[]> downloadReceipt(@PathVariable Long id) {
+    @GetMapping("/receipt/{id}")
+    public void downloadReceipt(
+            @PathVariable Long id,
+            HttpServletResponse response
+    ) throws IOException {
         Payment payment = paymentService.getPaymentById(id);
 
-        byte[] pdfBytes = pdfReceiptService.generatePaymentReceipt(payment);
+        response.setContentType("application/pdf");
+        response.setHeader(
+                "Content-Disposition",
+                "inline; filename=payment-receipt-" + payment.getId() + ".pdf"
+        );
 
-        String fileName = "payment-receipt-" + payment.getId() + ".pdf";
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + fileName)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdfBytes);
+        paymentReceiptPdfService.generateReceipt(payment, response.getOutputStream());
     }
 
+    @GetMapping("/{id}/receipt")
+    public void downloadReceiptAlternative(
+            @PathVariable Long id,
+            HttpServletResponse response
+    ) throws IOException {
+        downloadReceipt(id, response);
+    }
 
     @GetMapping("/export")
-    public void exportPaymentsToCsv(
+    public void exportPayments(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer paymentMonth,
             @RequestParam(required = false) Integer paymentYear,
             @RequestParam(required = false) String status,
             HttpServletResponse response
     ) throws IOException {
-
-        PaymentStatus selectedStatus = null;
-
-        if (status != null && !status.isBlank()) {
-            selectedStatus = PaymentStatus.valueOf(status);
-        }
+        PaymentStatus selectedStatus = parsePaymentStatus(status);
 
         List<Payment> payments = paymentService.searchPaymentsForExport(
                 keyword,
@@ -253,43 +265,63 @@ public class PaymentController {
         );
 
         response.setContentType("text/csv");
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader("Content-Disposition", "attachment; filename=payments-report.csv");
+        response.setHeader("Content-Disposition", "attachment; filename=payments.csv");
 
-        PrintWriter writer = response.getWriter();
+        StringBuilder csv = new StringBuilder();
 
-        writer.println("ID,Student Code,Student Name,Batch,Subject,Month,Year,Expected Amount,Paid Amount,Balance,Status,Method,Payment Date,Remarks");
+        csv.append("Receipt No,Student Code,Student Name,Batch,Subject,Month,Year,Expected Amount,Paid Amount,Balance Amount,Status,Method,Payment Date,Remarks\n");
 
         for (Payment payment : payments) {
-            writer.println(
-                    csv(payment.getId()) + "," +
-                            csv(payment.getEnrollment().getStudent().getStudentCode()) + "," +
-                            csv(payment.getEnrollment().getStudent().getFullName()) + "," +
-                            csv(payment.getEnrollment().getBatch().getBatchName()) + "," +
-                            csv(payment.getEnrollment().getBatch().getSubject()) + "," +
-                            csv(payment.getPaymentMonth()) + "," +
-                            csv(payment.getPaymentYear()) + "," +
-                            csv(payment.getExpectedAmount()) + "," +
-                            csv(payment.getPaidAmount()) + "," +
-                            csv(payment.getBalanceAmount()) + "," +
-                            csv(payment.getStatus()) + "," +
-                            csv(payment.getPaymentMethod()) + "," +
-                            csv(payment.getPaymentDate()) + "," +
-                            csv(payment.getRemarks())
-            );
+            csv.append(csv("REC-" + String.format("%05d", payment.getId()))).append(",");
+            csv.append(csv(payment.getEnrollment().getStudent().getStudentCode())).append(",");
+            csv.append(csv(payment.getEnrollment().getStudent().getFullName())).append(",");
+            csv.append(csv(payment.getEnrollment().getBatch().getBatchName())).append(",");
+            csv.append(csv(payment.getEnrollment().getBatch().getSubject())).append(",");
+            csv.append(csv(String.valueOf(payment.getPaymentMonth()))).append(",");
+            csv.append(csv(String.valueOf(payment.getPaymentYear()))).append(",");
+            csv.append(csv(String.valueOf(payment.getExpectedAmount()))).append(",");
+            csv.append(csv(String.valueOf(payment.getPaidAmount()))).append(",");
+            csv.append(csv(String.valueOf(payment.getBalanceAmount()))).append(",");
+            csv.append(csv(String.valueOf(payment.getStatus()))).append(",");
+            csv.append(csv(String.valueOf(payment.getPaymentMethod()))).append(",");
+            csv.append(csv(String.valueOf(payment.getPaymentDate()))).append(",");
+            csv.append(csv(payment.getRemarks())).append("\n");
         }
 
-        writer.flush();
+        response.getWriter().write(csv.toString());
     }
 
-    private String csv(Object value) {
+    private void keepPaymentFormValues(
+            RedirectAttributes redirectAttributes,
+            Long enrollmentId,
+            Integer paymentMonth,
+            Integer paymentYear,
+            BigDecimal paidAmount,
+            PaymentMethod paymentMethod,
+            String remarks
+    ) {
+        redirectAttributes.addFlashAttribute("selectedEnrollmentId", enrollmentId);
+        redirectAttributes.addFlashAttribute("selectedPaymentMonth", paymentMonth);
+        redirectAttributes.addFlashAttribute("selectedPaymentYear", paymentYear);
+        redirectAttributes.addFlashAttribute("selectedPaidAmount", paidAmount);
+        redirectAttributes.addFlashAttribute("selectedPaymentMethod", paymentMethod);
+        redirectAttributes.addFlashAttribute("selectedRemarks", remarks);
+    }
+
+    private PaymentStatus parsePaymentStatus(String value) {
+        try {
+            return value == null || value.isBlank() ? null : PaymentStatus.valueOf(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String csv(String value) {
         if (value == null) {
             return "";
         }
 
-        String text = value.toString();
-        text = text.replace("\"", "\"\"");
-
-        return "\"" + text + "\"";
+        String escapedValue = value.replace("\"", "\"\"");
+        return "\"" + escapedValue + "\"";
     }
 }
