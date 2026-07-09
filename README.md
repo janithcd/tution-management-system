@@ -1,552 +1,595 @@
-# Tuition Management System
+# EduTrack Tuition Management System
 
-A Spring Boot-based Tuition Class Student Management System for managing students, class batches, enrollments, attendance, payments, reports, dashboard analytics, and PDF payment receipts.
+A professional Spring Boot-based Tuition Class Student Management System for managing students, class batches, enrollments, attendance, payments, monthly dues, reports, and PDF payment receipts.
 
-This project is designed for tuition classes that manage O/L and A/L students, monthly fees, class attendance, and payment tracking.
+This project is built as a full-stack Java web application using Spring Boot, Thymeleaf, MySQL, Bootstrap, and OpenPDF.
 
 ---
 
-## Features
+## Project Overview
 
-### Dashboard
+EduTrack helps tuition class owners or administrators manage day-to-day academic and payment operations in one system.
 
-- Total students count
-- Active students count
-- Total batches count
-- Active batches count
-- Active enrollments count
-- Today attendance count
-- This month income
-- Pending payment count
-- Payment status chart
-- Attendance status chart
-- Monthly income by batch chart
+The system supports:
 
-### Student Management
-
-- Add new students
-- Edit student details
-- Delete students
-- Search students by:
-    - Student code
-    - Student name
-    - Phone number
-    - Parent phone number
-    - School
-- Filter students by:
-    - Education level
-    - Grade
-- Pagination support
-
-Supported education structure:
-
-```text
-O/L
- ├── Grade 10
- └── Grade 11
-
-A/L
- ├── Grade 12
- └── Grade 13
-```
-
-### Batch / Class Management
-
-- Add class batches
-- Edit batch details
-- Delete batches
-- Search batches by:
-    - Batch name
-    - Subject
-    - Teacher name
-- Filter batches by:
-    - Education level
-    - Grade
-    - Stream
-- Pagination support
-
-Example batches:
-
-```text
-O/L Grade 10 Mathematics - Sunday 8.00 AM
-O/L Grade 11 Science - Saturday 2.00 PM
-A/L Grade 12 Commerce Accounting - Monday 4.00 PM
-A/L Grade 13 Technology ICT - Thursday 5.00 PM
-```
-
-### Student Enrollment
-
-- Enroll students into batches
-- Prevent duplicate enrollments
-- Activate / deactivate enrollments
-- Search enrollments by:
-    - Student code
-    - Student name
-    - Batch name
-    - Subject
-- Filter enrollments by:
-    - Education level
-    - Grade
-    - Stream
-    - Enrollment status
-- Pagination support
-
-### Attendance Management
-
-- Select batch and date
-- Mark attendance for enrolled students
-- Attendance status:
-    - Present
-    - Absent
-    - Late
-- Update attendance if already marked
-- View attendance report by batch and date
-- Search attendance records by:
-    - Student code
-    - Student name
-    - Batch name
-    - Subject
-- Filter attendance records by:
-    - Batch
-    - Date range
-    - Attendance status
-- Pagination support
-
-### Payment Management
-
-- Add monthly payments
-- Automatically calculate:
-    - Expected amount
-    - Paid amount
-    - Balance amount
-    - Payment status
-- Payment statuses:
-    - Paid
-    - Partial
-    - Unpaid
-- Payment methods:
-    - Cash
-    - Bank transfer
-    - Card
-    - Online
-- Search payments by:
-    - Student code
-    - Student name
-    - Batch name
-- Filter payments by:
-    - Month
-    - Year
-    - Payment status
-- Pagination support
-
-### Payment Due Report
-
-- Shows payment status for all active enrollments
-- Detects unpaid students even when no payment record exists
-- Shows:
-    - Expected amount
-    - Paid amount
-    - Balance
-    - Status
-
-### Reports
-
-Available reports:
-
-- Monthly income report
-- Student payment history
-- Student attendance history
-- Attendance records report
-
-### PDF Receipt Generation
-
-- Generate PDF payment receipts
-- Receipt includes:
-    - Student code
-    - Student name
-    - Batch
-    - Subject
-    - Payment month
-    - Payment year
-    - Expected amount
-    - Paid amount
-    - Balance
-    - Payment status
-    - Payment method
-    - Payment date
-    - Remarks
+- Student management
+- Class / batch management
+- Student enrollments
+- Attendance marking and attendance records
+- Monthly payment recording
+- Payment dues tracking
+- PDF payment receipt generation
+- Search, filters, pagination, validation, and alerts
+- Dashboard charts and reports
 
 ---
 
 ## Tech Stack
 
-- Java 17
-- Spring Boot
-- Spring MVC
-- Spring Data JPA
-- Hibernate
-- Thymeleaf
-- MySQL
-- Bootstrap
-- Chart.js
-- OpenPDF
-- Lombok
-- Maven
+| Technology | Purpose |
+|---|---|
+| Java 17 | Main programming language |
+| Spring Boot 4.1.0 | Backend framework |
+| Spring MVC | Web layer |
+| Spring Data JPA | Database operations |
+| Hibernate | ORM |
+| MySQL | Database |
+| Thymeleaf | Server-side HTML rendering |
+| Bootstrap 5 | UI design |
+| Bootstrap Icons | Icons |
+| Chart.js | Dashboard charts |
+| OpenPDF | PDF receipt generation |
+| Maven | Dependency management |
+| Lombok | Boilerplate code reduction |
+
+---
+
+## Main Features
+
+### 1. Dashboard
+
+The dashboard provides a quick overview of the system.
+
+Includes:
+
+- Total students
+- Active students
+- Total batches
+- Active enrollments
+- Today attendance count
+- Current month income
+- Pending payments
+- Charts for attendance and payment summaries
+- Quick action cards
+
+---
+
+### 2. Student Management
+
+The student module allows the admin to manage all student records.
+
+Features:
+
+- Add new student
+- Edit student
+- Delete student
+- Search students by name, code, phone, parent phone, or school
+- Filter by education level and grade
+- Pagination
+- Form validation
+- Success and error alerts
+- Auto-generated student code
+
+Student information includes:
+
+- Student code
+- Full name
+- Phone number
+- Parent phone number
+- Address
+- School
+- Education level
+- Grade
+- Stream
+- Joined date
+- Status
+
+---
+
+### 3. Batch Management
+
+The batch module is used to manage tuition class batches.
+
+Features:
+
+- Add new batch
+- Edit batch
+- Delete batch
+- Search by batch name, subject, or teacher
+- Filter by education level, grade, and stream
+- Pagination
+- Validation
+- Success and error alerts
+
+Batch information includes:
+
+- Batch name
+- Education level
+- Grade
+- Stream
+- Subject
+- Teacher name
+- Monthly fee
+- Class day
+- Start time
+- End time
+- Status
+
+---
+
+### 4. Enrollment Management
+
+The enrollment module connects students with class batches.
+
+Features:
+
+- Enroll students into batches
+- Prevent duplicate enrollments
+- Reactivate inactive enrollments
+- Activate / deactivate enrollments
+- Search enrollments
+- Filter enrollments
+- Pagination
+- Success and error alerts
+
+Duplicate enrollment protection:
+
+If the same student is already enrolled in the same batch, the system shows a clean error message instead of creating duplicate records.
+
+---
+
+### 5. Attendance Management
+
+The attendance module helps track student attendance.
+
+Features:
+
+- Select batch and date
+- Mark attendance for students
+- Attendance statuses:
+  - PRESENT
+  - ABSENT
+  - LATE
+- Search attendance records
+- Filter by batch, date range, and status
+- Export attendance records to CSV
+- Attendance report by student
+
+---
+
+### 6. Payment Management
+
+The payment module handles monthly class fee payments.
+
+Features:
+
+- Record monthly payments
+- Prevent duplicate monthly payments
+- Track paid, partial, and unpaid statuses
+- Search payment records
+- Filter by month, year, and status
+- Export payments to CSV
+- Success and error alerts
+- Redirect back to payment form when an error occurs
+- Generate professional PDF receipts
+
+Payment statuses:
+
+- PAID
+- PARTIAL
+- UNPAID
+
+Payment methods:
+
+- CASH
+- BANK_TRANSFER
+- CARD
+- ONLINE
+
+---
+
+### 7. Payment Dues
+
+The payment dues module shows payment status for active enrollments for a selected month.
+
+Features:
+
+- Select month and year
+- View all due records
+- Show expected amount
+- Show paid amount
+- Show balance amount
+- Show payment status
+- Identify unpaid and partially paid students easily
+
+---
+
+### 8. PDF Payment Receipt
+
+The system generates a professional PDF payment receipt using OpenPDF.
+
+Receipt includes:
+
+- Receipt number
+- EduTrack receipt badge
+- Payment date
+- Student details
+- Batch details
+- Payment details
+- Paid amount
+- Balance amount
+- Payment method
+- Payment status seal
+- Authorized signature section
+
+Receipt status seal supports:
+
+- PAID
+- PARTIALLY PAID
+- UNPAID
+
+Example receipt URLs:
+
+    /payments/receipt/{id}
+    /payments/{id}/receipt
+
+---
+
+### 9. Reports
+
+The report module provides useful summaries for administration.
+
+Includes:
+
+- Monthly income report
+- Student payment report
+- Student attendance report
 
 ---
 
 ## Project Structure
 
-```text
-src/main/java/lk/janith/tuitionmanagement
-│
-├── config
-│   └── SecurityConfig.java
-│
-├── controller
-│   ├── AttendanceController.java
-│   ├── BatchController.java
-│   ├── DashboardController.java
-│   ├── EnrollmentController.java
-│   ├── PaymentController.java
-│   ├── ReportController.java
-│   └── StudentController.java
-│
-├── dto
-│   └── PaymentDueDto.java
-│
-├── entity
-│   ├── Attendance.java
-│   ├── Batch.java
-│   ├── Enrollment.java
-│   ├── Payment.java
-│   └── Student.java
-│
-├── enums
-│   ├── AttendanceStatus.java
-│   ├── BatchStatus.java
-│   ├── EducationLevel.java
-│   ├── EnrollmentStatus.java
-│   ├── Grade.java
-│   ├── PaymentMethod.java
-│   ├── PaymentStatus.java
-│   ├── StreamType.java
-│   └── StudentStatus.java
-│
-├── repository
-│   ├── AttendanceRepository.java
-│   ├── BatchRepository.java
-│   ├── EnrollmentRepository.java
-│   ├── PaymentRepository.java
-│   └── StudentRepository.java
-│
-├── service
-│   ├── AttendanceService.java
-│   ├── BatchService.java
-│   ├── DashboardService.java
-│   ├── EnrollmentService.java
-│   ├── PaymentService.java
-│   ├── PdfReceiptService.java
-│   ├── ReportService.java
-│   └── StudentService.java
-│
-└── TuitionManagementApplication.java
-```
+    tuition-management
+    ├── src
+    │   ├── main
+    │   │   ├── java
+    │   │   │   └── lk
+    │   │   │       └── janith
+    │   │   │           └── tuitionmanagement
+    │   │   │               ├── controller
+    │   │   │               ├── entity
+    │   │   │               ├── enums
+    │   │   │               ├── repository
+    │   │   │               ├── service
+    │   │   │               └── TuitionManagementApplication.java
+    │   │   └── resources
+    │   │       ├── static
+    │   │       │   └── css
+    │   │       │       └── app.css
+    │   │       ├── templates
+    │   │       │   ├── fragments
+    │   │       │   ├── dashboard.html
+    │   │       │   ├── students
+    │   │       │   ├── batches
+    │   │       │   ├── enrollments
+    │   │       │   ├── attendance
+    │   │       │   ├── payments
+    │   │       │   └── reports
+    │   │       └── application.properties
+    │   └── test
+    ├── pom.xml
+    └── README.md
 
 ---
 
-## Database Tables
+## Database Name
 
-Main tables:
+The project uses MySQL.
 
-```text
-students
-batches
-enrollments
-attendance_records
-payments
-```
+Default database name:
+
+    tuition_management_db
+
+The database can be created automatically if this property is enabled:
+
+    spring.datasource.url=jdbc:mysql://localhost:3306/tuition_management_db?createDatabaseIfNotExist=true
 
 ---
 
-## Setup Instructions
+## Application Properties
+
+Create or update this file:
+
+    src/main/resources/application.properties
+
+Recommended configuration:
+
+    spring.application.name=tuition-management
+
+    spring.datasource.url=jdbc:mysql://localhost:3306/tuition_management_db?createDatabaseIfNotExist=true
+    spring.datasource.username=root
+    spring.datasource.password=${DB_PASSWORD}
+
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=true
+    spring.jpa.properties.hibernate.format_sql=true
+
+    spring.thymeleaf.cache=false
+
+    server.port=8080
+
+    spring.docker.compose.enabled=false
+
+---
+
+## Environment Variable
+
+This project uses an environment variable for the database password.
+
+Set this environment variable:
+
+    DB_PASSWORD=your_mysql_password
+
+Example for Windows PowerShell:
+
+    setx DB_PASSWORD "your_mysql_password"
+
+After setting it, restart IntelliJ IDEA or your terminal.
+
+---
+
+## How to Run the Project
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/YOUR_USERNAME/tuition-management-system.git
-cd tuition-management-system
-```
+    git clone https://github.com/your-username/tuition-management-system.git
 
-### 2. Create MySQL Database
+### 2. Open Project
 
-Open MySQL and run:
+Open the project using IntelliJ IDEA.
 
-```sql
-CREATE DATABASE tuition_management_db;
-```
-
-### 3. Configure Database Connection
-
-Open:
-
-```text
-src/main/resources/application.properties
-```
-
-Example configuration:
-
-```properties
-spring.application.name=tuition-management
-
-spring.datasource.url=jdbc:mysql://localhost:3306/tuition_management_db?createDatabaseIfNotExist=true
-spring.datasource.username=root
-spring.datasource.password=${DB_PASSWORD}
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-
-spring.thymeleaf.cache=false
-server.port=8080
-
-spring.docker.compose.enabled=false
-```
-
-### 4. Add Environment Variable
-
-Set your MySQL password as an environment variable.
-
-In IntelliJ:
-
-```text
-Run
-→ Edit Configurations
-→ Environment variables
-→ DB_PASSWORD=your_mysql_password
-```
-
-Example:
-
-```text
-DB_PASSWORD=1234
-```
-
-Do not commit your real database password to GitHub.
-
-### 5. Run the Project
-
-Using IntelliJ:
-
-```text
-Run TuitionManagementApplication
-```
-
-Or using Maven:
-
-```bash
-mvn spring-boot:run
-```
-
-Open in browser:
-
-```text
-http://localhost:8080/dashboard
-```
-
----
-
-## Main URLs
-
-```text
-Dashboard:
-http://localhost:8080/dashboard
-
-Students:
-http://localhost:8080/students
-
-Batches:
-http://localhost:8080/batches
-
-Enrollments:
-http://localhost:8080/enrollments
-
-Attendance:
-http://localhost:8080/attendance
-
-Attendance Records:
-http://localhost:8080/attendance/records
-
-Payments:
-http://localhost:8080/payments
-
-Payment Dues:
-http://localhost:8080/payments/dues
-
-Reports:
-http://localhost:8080/reports
-```
-
----
-
-## Demo Data
-
-The project can be tested with sample data such as:
-
-- 500 Sri Lankan-style student records
-- Bulk enrollments
-- 1000 payment records
-- Attendance records for previous days
-
-Demo data can be inserted using SQL scripts through MySQL Workbench.
-
-Recommended insert order:
-
-```text
-1. Batches
-2. Students
-3. Enrollments
-4. Payments
-5. Attendance Records
-```
-
----
-
-## Important Notes
-
-### Do not hard-delete enrollments with payments
-
-If an enrollment already has payment or attendance records, it should not be deleted directly.
-
-Use:
-
-```text
-Deactivate Enrollment
-```
-
-instead of deleting it.
-
-This protects payment and attendance history.
-
-### Safe update mode in MySQL Workbench
-
-If MySQL Workbench blocks delete queries, run:
-
-```sql
-SET SQL_SAFE_UPDATES = 0;
-```
-
-After cleanup, you can enable it again:
-
-```sql
-SET SQL_SAFE_UPDATES = 1;
-```
-
----
-
-## Common Errors and Fixes
-
-### Docker Compose Error
-
-If Spring Boot tries to start Docker and gives an error, add this to `application.properties`:
-
-```properties
-spring.docker.compose.enabled=false
-```
-
-### MySQL Connection Refused
+### 3. Configure MySQL
 
 Make sure MySQL is running.
 
-Check MySQL service:
+Create the database manually if needed:
 
-```text
-Services → MySQL80 → Start
-```
+    CREATE DATABASE tuition_management_db;
 
-Or use CMD:
+### 4. Reload Maven
 
-```cmd
-net start MySQL80
-```
+In IntelliJ IDEA:
 
-### Wrong Pageable Import
+    Right click pom.xml
+    Maven
+    Reload Project
 
-Do not use:
+### 5. Build the Project
 
-```java
-import java.awt.print.Pageable;
-```
+    mvn clean compile
 
-Use:
+### 6. Run the Application
 
-```java
-import org.springframework.data.domain.Pageable;
-```
+Run the main class:
 
-### Thymeleaf Template Not Found
+    TuitionManagementApplication.java
 
-Make sure HTML files are inside:
+Or use Maven:
 
-```text
-src/main/resources/templates
-```
+    mvn spring-boot:run
 
-Example:
+### 7. Open in Browser
 
-```text
-src/main/resources/templates/reports/index.html
-```
+    http://localhost:8080/dashboard
 
 ---
 
-## Current Project Status
+## Important Routes
 
-Completed modules:
+| Module | URL |
+|---|---|
+| Dashboard | `/dashboard` |
+| Students | `/students` |
+| Add Student | `/students/new` |
+| Batches | `/batches` |
+| Add Batch | `/batches/new` |
+| Enrollments | `/enrollments` |
+| New Enrollment | `/enrollments/new` |
+| Attendance | `/attendance` |
+| Attendance Records | `/attendance/records` |
+| Payments | `/payments` |
+| Add Payment | `/payments/new` |
+| Payment Dues | `/payments/dues` |
+| Reports | `/reports` |
 
-- Student management
-- Batch management
-- Enrollment management
-- Attendance management
-- Payment management
-- Payment dues report
-- Dashboard
-- Dashboard charts
-- Reports module
-- Search and filters
-- Pagination
-- PDF payment receipt generation
-- Demo data support
+---
+
+## Validation
+
+The system includes backend validation using Spring Boot Validation.
+
+Examples:
+
+Student validation:
+
+- Full name is required
+- Phone number must contain exactly 10 digits
+- Parent phone number is required
+- School name is required
+- Education level is required
+- Grade is required
+- Stream is required
+- Joined date is required
+- Student status is required
+
+Batch validation:
+
+- Batch name is required
+- Subject is required
+- Teacher name is required
+- Monthly fee must be greater than 0
+- Class day is required
+- Start time is required
+- End time is required
+- Batch status is required
+
+---
+
+## Alerts and Error Handling
+
+The system includes clean success and error alerts.
+
+Examples:
+
+    Student added successfully.
+    Student updated successfully.
+    Batch cannot be deleted because related enrollments, payments, or attendance records may exist.
+    This student is already enrolled in the selected batch.
+    This enrollment already has a payment record for July 2026.
+    Payment recorded successfully.
+
+---
+
+## Duplicate Protection
+
+The system prevents important duplicate records.
+
+Protected actions:
+
+- Same student cannot be enrolled into the same batch twice
+- Same enrollment cannot have duplicate payments for the same month and year
+- Delete actions are protected when related records exist
+
+---
+
+## Export Features
+
+The system supports CSV export for:
+
+- Attendance records
+- Payment records
+
+This helps admins analyze records in Excel or Google Sheets.
+
+---
+
+## PDF Receipt Feature
+
+The project uses OpenPDF to generate receipts.
+
+Dependency:
+
+    com.github.librepdf:openpdf
+
+Receipt URLs:
+
+    /payments/receipt/{id}
+    /payments/{id}/receipt
+
+The PDF receipt is generated dynamically from payment data.
+
+---
+
+## Screenshots
+
+Add your screenshots here after running the project.
+
+### Dashboard
+
+    screenshots/dashboard.png
+
+### Student Management
+
+    screenshots/students.png
+
+### Batch Management
+
+    screenshots/batches.png
+
+### Payment Receipt
+
+    screenshots/payment-receipt.png
+
+---
+
+## Maven Dependencies Used
+
+Main dependencies include:
+
+- spring-boot-starter-webmvc
+- spring-boot-starter-thymeleaf
+- spring-boot-starter-data-jpa
+- spring-boot-starter-validation
+- spring-boot-starter-security
+- mysql-connector-j
+- lombok
+- openpdf
+- spring-boot-devtools
+
+---
+
+## Build Command
+
+    mvn clean compile
+
+---
+
+## Run Command
+
+    mvn spring-boot:run
+
+---
+
+## Git Commands
+
+Check status:
+
+    git status
+
+Add files:
+
+    git add .
+
+Commit:
+
+    git commit -m "Update tuition management system"
+
+Push:
+
+    git push
 
 ---
 
 ## Future Improvements
 
-Planned improvements:
+Possible future updates:
 
-- Admin login with Spring Security
-- Role-based access control
-- Teacher login
-- Parent/student portal
-- CSV export
-- Excel export
-- Advanced PDF reports
+- Admin login and role-based access
+- Student portal
+- Parent portal
 - SMS or WhatsApp payment reminders
-- QR code attendance
-- Online payment integration
+- Email receipt sending
+- Online payment gateway integration
+- QR code attendance marking
+- Advanced report dashboard
+- Backup and restore feature
 - Cloud deployment
-- Database backup system
 
 ---
 
 ## Author
 
-Developed by **Janith Dasanayaka**
+Developed by Janith Dasanayaka.
 
-GitHub: `@janithcd`
+GitHub: @janithcd
 
----
-
-## License
-
-This project is for educational and portfolio purposes.
