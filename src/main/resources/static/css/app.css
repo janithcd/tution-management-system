@@ -162,6 +162,14 @@ body {
     overflow: hidden;
 }
 
+.table-card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .stat-card {
     padding: 22px;
     position: relative;
@@ -229,6 +237,34 @@ body {
     border-radius: 12px;
     border-color: var(--border);
     background: #f8fafc;
+}
+
+/* Validation Errors */
+
+.field-error {
+    display: block;
+    color: var(--danger);
+    font-size: 0.84rem;
+    font-weight: 700;
+    margin-top: 7px;
+    line-height: 1.35;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    background-image: none;
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.10);
+}
+
+.validation-summary {
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    font-weight: 700;
+    border: 1px solid rgba(220, 38, 38, 0.14);
+    margin-bottom: 18px;
 }
 
 /* Buttons */
@@ -334,15 +370,7 @@ body {
     background: #f8fafc;
 }
 
-.table-card-header {
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Badges */
+/* Badges / Status */
 
 .badge {
     padding: 0.52rem 0.7rem;
@@ -381,31 +409,6 @@ body {
     color: var(--primary);
 }
 
-/* Pagination */
-
-.pagination {
-    gap: 6px;
-}
-
-.page-link {
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    color: var(--primary);
-    font-weight: 700;
-    min-width: 40px;
-    text-align: center;
-}
-
-.page-item.active .page-link {
-    background: var(--primary);
-    border-color: var(--primary);
-    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
-}
-
-.page-item.disabled .page-link {
-    color: var(--light-muted);
-}
-
 /* Alerts */
 
 .alert {
@@ -418,6 +421,167 @@ body {
 .alert-warning {
     background: var(--warning-soft);
     color: #92400e;
+}
+
+/* Page Alert Messages */
+
+.app-alert {
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 22px;
+}
+
+.alert-success.app-alert {
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.alert-danger.app-alert {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+/* Pagination */
+
+.pagination-wrapper {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination-summary {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+.pagination {
+    gap: 6px;
+}
+
+.app-pagination {
+    margin-bottom: 0;
+    gap: 7px;
+}
+
+.page-link,
+.app-pagination .page-link {
+    min-width: 42px;
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 12px !important;
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: #334155;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+}
+
+.page-link:hover,
+.app-pagination .page-link:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-color: var(--primary-soft);
+}
+
+.page-item.active .page-link,
+.app-pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--primary), #38bdf8);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
+}
+
+.page-item.disabled .page-link,
+.app-pagination .page-item.disabled .page-link {
+    background: #f8fafc;
+    color: #cbd5e1;
+    box-shadow: none;
+}
+
+.app-pagination .page-dots {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    color: var(--muted) !important;
+}
+
+/* Dashboard Quick Actions */
+
+.quick-action-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: #ffffff;
+    color: var(--dark);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-soft);
+    color: var(--dark);
+}
+
+.quick-action-icon {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 16px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Info Cards */
+
+.info-card {
+    display: flex;
+    gap: 14px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+    border: 1px solid var(--border);
+}
+
+.info-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 15px;
+    background: var(--primary-soft);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Attendance */
+
+.attendance-select {
+    min-width: 160px;
+    font-weight: 700;
 }
 
 /* Charts */
@@ -464,6 +628,30 @@ canvas {
         flex-direction: column;
         align-items: flex-start;
     }
+
+    .table-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pagination-wrapper {
+        padding: 14px;
+    }
+
+    .app-pagination .page-link {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 10px;
+        font-size: 0.85rem;
+    }
+
+    .app-pagination .page-item:first-child,
+    .app-pagination .page-item:last-child {
+        display: none;
+    }
 }
 
 @media (max-width: 576px) {
@@ -490,172 +678,8 @@ canvas {
         padding: 12px;
         font-size: 0.88rem;
     }
-    /* Better Pagination */
 
-    .pagination-wrapper {
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        padding: 18px;
-        box-shadow: var(--shadow-sm);
-    }
-
-    .pagination-summary {
-        text-align: center;
-        color: var(--muted);
-        font-size: 0.92rem;
-        font-weight: 600;
-        margin-bottom: 14px;
-    }
-
-    .app-pagination {
-        margin-bottom: 0;
-        gap: 7px;
-    }
-
-    .app-pagination .page-link {
-        min-width: 42px;
-        height: 42px;
-        padding: 0 14px;
-        border-radius: 12px !important;
-        border: 1px solid var(--border);
-        background: #ffffff;
-        color: #334155;
-        font-weight: 800;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
-    }
-
-    .app-pagination .page-link:hover {
-        background: var(--primary-soft);
-        color: var(--primary);
-        border-color: var(--primary-soft);
-    }
-
-    .app-pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, var(--primary), #38bdf8);
-        color: white;
-        border-color: transparent;
-        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25);
-    }
-
-    .app-pagination .page-item.disabled .page-link {
-        background: #f8fafc;
-        color: #cbd5e1;
-        box-shadow: none;
-    }
-
-    .app-pagination .page-dots {
-        background: transparent !important;
-        border-color: transparent !important;
-        box-shadow: none !important;
-        color: var(--muted) !important;
-    }
-    /* Dashboard Quick Actions */
-
-    .quick-action-card {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        padding: 18px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        background: #ffffff;
-        color: var(--dark);
-        text-decoration: none;
-        transition: all 0.2s ease;
-        height: 100%;
-    }
-
-    .quick-action-card:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary-soft);
-        color: var(--dark);
-    }
-
-    .quick-action-icon {
-        width: 46px;
-        height: 46px;
-        min-width: 46px;
-        border-radius: 16px;
-        background: var(--primary-soft);
-        color: var(--primary);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-    }
-    /* Form Info Cards */
-
-    .info-card {
-        display: flex;
-        gap: 14px;
-        padding: 18px;
-        border-radius: var(--radius-md);
-        background: #f8fafc;
-        border: 1px solid var(--border);
-    }
-    /* Attendance Marking */
-
-    .attendance-select {
-        min-width: 160px;
-        font-weight: 700;
-    }
-    .info-icon {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
-        border-radius: 15px;
-        background: var(--primary-soft);
-        color: var(--primary);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-    }
-    /* Validation Errors */
-
-    .field-error {
-        color: var(--danger);
-        font-size: 0.84rem;
-        font-weight: 700;
-        margin-top: 6px;
-    }
-
-    .form-control.is-invalid,
-    .form-select.is-invalid {
-        border-color: var(--danger);
-        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.10);
-    }
-
-    .validation-summary {
-        background: var(--danger-soft);
-        color: var(--danger);
-        border-radius: var(--radius-md);
-        padding: 16px 18px;
-        font-weight: 700;
-        border: 1px solid rgba(220, 38, 38, 0.14);
-    }
-
-    @media (max-width: 768px) {
-        .pagination-wrapper {
-            padding: 14px;
-        }
-
-        .app-pagination .page-link {
-            min-width: 38px;
-            height: 38px;
-            padding: 0 10px;
-            font-size: 0.85rem;
-        }
-
-        .app-pagination .page-item:first-child,
-        .app-pagination .page-item:last-child {
-            display: none;
-        }
+    .btn {
+        width: 100%;
     }
 }

@@ -1,90 +1,95 @@
-<nav th:fragment="navbar" class="navbar navbar-expand-lg app-navbar sticky-top">
-    <div class="container-fluid px-4">
+<div th:fragment="navbar">
 
-        <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard">
-            <span class="brand-icon">
-                <i class="bi bi-mortarboard-fill"></i>
-            </span>
-            <span>EduTrack</span>
-        </a>
+    <nav class="navbar navbar-expand-lg app-navbar sticky-top">
+        <div class="container-fluid px-4">
 
-        <button class="navbar-toggler border-0 shadow-none" type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar"
-                aria-controls="mainNavbar"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard">
+                <span class="brand-icon">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </span>
+                <span>EduTrack</span>
+            </a>
 
-        <div class="collapse navbar-collapse" id="mainNavbar">
+            <button class="navbar-toggler border-0 shadow-none" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+            <div class="collapse navbar-collapse" id="mainNavbar">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/dashboard">
-                        <i class="bi bi-speedometer2"></i>
-                        Dashboard
-                    </a>
-                </li>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/students">
-                        <i class="bi bi-people"></i>
-                        Students
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/batches">
-                        <i class="bi bi-journal-bookmark"></i>
-                        Batches
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/students">
+                            <i class="bi bi-people"></i>
+                            Students
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/enrollments">
-                        <i class="bi bi-person-check"></i>
-                        Enrollments
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/batches">
+                            <i class="bi bi-journal-bookmark"></i>
+                            Batches
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/attendance">
-                        <i class="bi bi-calendar-check"></i>
-                        Attendance
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/enrollments">
+                            <i class="bi bi-person-check"></i>
+                            Enrollments
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/attendance/records">
-                        <i class="bi bi-clipboard-data"></i>
-                        Records
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/attendance">
+                            <i class="bi bi-calendar-check"></i>
+                            Attendance
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/payments">
-                        <i class="bi bi-cash-stack"></i>
-                        Payments
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/attendance/records">
+                            <i class="bi bi-clipboard-data"></i>
+                            Records
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/payments/dues">
-                        <i class="bi bi-exclamation-circle"></i>
-                        Dues
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/payments">
+                            <i class="bi bi-cash-stack"></i>
+                            Payments
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/reports">
-                        <i class="bi bi-file-earmark-bar-graph"></i>
-                        Reports
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/payments/dues">
+                            <i class="bi bi-exclamation-circle"></i>
+                            Dues
+                        </a>
+                    </li>
 
-            </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reports">
+                            <i class="bi bi-file-earmark-bar-graph"></i>
+                            Reports
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+
+</div>

@@ -14,7 +14,9 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
             <div>
                 <h2 class="page-title">Student Management</h2>
-                <p class="page-subtitle">Manage O/L and A/L student records, contact details, school information, and status.</p>
+                <p class="page-subtitle">
+                    Manage O/L and A/L student records, contact details, school information, and status.
+                </p>
             </div>
 
             <div class="d-flex gap-2 flex-wrap">
@@ -24,6 +26,17 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success app-alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger app-alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
     </div>
 
     <!-- Filters -->
@@ -217,7 +230,7 @@
         No students found.
     </div>
 
-    <!-- Better Pagination -->
+    <!-- Pagination -->
     <div th:if="${totalPages > 1}" class="pagination-wrapper mt-4">
 
         <div class="pagination-summary">
@@ -233,116 +246,65 @@
         <nav>
             <ul class="pagination app-pagination justify-content-center flex-wrap">
 
-                <!-- First Page -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=0,
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}">
+                       th:href="@{/students(page=0,size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}">
                         <i class="bi bi-chevron-double-left"></i>
                         First
                     </a>
                 </li>
 
-                <!-- Previous Page -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=${currentPage - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}">
+                       th:href="@{/students(page=${currentPage - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}">
                         <i class="bi bi-chevron-left"></i>
                         Prev
                     </a>
                 </li>
 
-                <!-- First Number -->
                 <li class="page-item" th:if="${startPage > 0}">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=0,
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}">
+                       th:href="@{/students(page=0,size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}">
                         1
                     </a>
                 </li>
 
-                <!-- Left Dots -->
                 <li class="page-item disabled" th:if="${startPage > 1}">
                     <span class="page-link page-dots">...</span>
                 </li>
 
-                <!-- Middle Numbers -->
                 <li class="page-item"
                     th:each="i : ${#numbers.sequence(startPage, endPage)}"
                     th:classappend="${i == currentPage} ? 'active'">
 
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=${i},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}"
+                       th:href="@{/students(page=${i},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}"
                        th:text="${i + 1}">
                     </a>
                 </li>
 
-                <!-- Right Dots -->
                 <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
                     <span class="page-link page-dots">...</span>
                 </li>
 
-                <!-- Last Number -->
                 <li class="page-item" th:if="${endPage < totalPages - 1}">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=${totalPages - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}"
+                       th:href="@{/students(page=${totalPages - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}"
                        th:text="${totalPages}">
                     </a>
                 </li>
 
-                <!-- Next Page -->
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=${currentPage + 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}">
+                       th:href="@{/students(page=${currentPage + 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}">
                         Next
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>
 
-                <!-- Last Page -->
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/students(
-                            page=${totalPages - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade}
-                       )}">
+                       th:href="@{/students(page=${totalPages - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade})}">
                         Last
                         <i class="bi bi-chevron-double-right"></i>
                     </a>

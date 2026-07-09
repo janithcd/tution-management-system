@@ -1,5 +1,6 @@
 package lk.janith.tuitionmanagement.controller;
 
+import jakarta.validation.Valid;
 import lk.janith.tuitionmanagement.entity.Student;
 import lk.janith.tuitionmanagement.enums.EducationLevel;
 import lk.janith.tuitionmanagement.enums.Grade;
@@ -12,10 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/students")
@@ -26,7 +26,6 @@ public class StudentController {
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-
 
     @GetMapping
     public String listStudents(
@@ -95,7 +94,6 @@ public class StudentController {
         return "students/list";
     }
 
-
     @GetMapping("/new")
     public String showStudentForm(Model model) {
         model.addAttribute("student", new Student());
@@ -104,42 +102,66 @@ public class StudentController {
         return "students/form";
     }
 
-
-    // Save
     @PostMapping("/save")
     public String saveStudent(
             @Valid @ModelAttribute("student") Student student,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
             addStudentFormData(model);
             return "students/form";
         }
 
+        boolean isNewStudent = student.getId() == null;
+
         studentService.saveStudent(student);
+
+        if (isNewStudent) {
+            redirectAttributes.addFlashAttribute("successMessage", "Student added successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Student updated successfully.");
+        }
 
         return "redirect:/students";
     }
 
-
     @GetMapping("/edit/{id}")
     public String editStudent(
             @PathVariable Long id,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
-        Student student = studentService.getStudentById(id);
+        try {
+            Student student = studentService.getStudentById(id);
 
-        model.addAttribute("student", student);
-        addStudentFormData(model);
+            model.addAttribute("student", student);
+            addStudentFormData(model);
 
-        return "students/form";
+            return "students/form";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Student not found.");
+            return "redirect:/students";
+        }
     }
 
-
     @GetMapping("/delete/{id}")
-    public String deleteStudent(@PathVariable Long id) {
-        studentService.deleteStudent(id);
+    public String deleteStudent(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            studentService.deleteStudent(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Student deleted successfully.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Student cannot be deleted because related enrollments, payments, or attendance records may exist."
+            );
+        }
 
         return "redirect:/students";
     }

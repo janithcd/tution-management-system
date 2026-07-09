@@ -1,5 +1,6 @@
 package lk.janith.tuitionmanagement.controller;
 
+import jakarta.validation.Valid;
 import lk.janith.tuitionmanagement.entity.Batch;
 import lk.janith.tuitionmanagement.enums.BatchStatus;
 import lk.janith.tuitionmanagement.enums.EducationLevel;
@@ -12,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.DayOfWeek;
 
@@ -27,7 +28,7 @@ public class BatchController {
     public BatchController(BatchService batchService) {
         this.batchService = batchService;
     }
-    
+
     @GetMapping
     public String listBatches(
             @RequestParam(required = false) String keyword,
@@ -104,7 +105,6 @@ public class BatchController {
         return "batches/list";
     }
 
-
     @GetMapping("/new")
     public String showBatchForm(Model model) {
         model.addAttribute("batch", new Batch());
@@ -113,41 +113,66 @@ public class BatchController {
         return "batches/form";
     }
 
-
-    // Save
     @PostMapping("/save")
     public String saveBatch(
             @Valid @ModelAttribute("batch") Batch batch,
             BindingResult bindingResult,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
         if (bindingResult.hasErrors()) {
             addBatchFormData(model);
             return "batches/form";
         }
 
+        boolean isNewBatch = batch.getId() == null;
+
         batchService.saveBatch(batch);
+
+        if (isNewBatch) {
+            redirectAttributes.addFlashAttribute("successMessage", "Batch added successfully.");
+        } else {
+            redirectAttributes.addFlashAttribute("successMessage", "Batch updated successfully.");
+        }
 
         return "redirect:/batches";
     }
 
-
     @GetMapping("/edit/{id}")
     public String editBatch(
             @PathVariable Long id,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) {
-        Batch batch = batchService.getBatchById(id);
+        try {
+            Batch batch = batchService.getBatchById(id);
 
-        model.addAttribute("batch", batch);
-        addBatchFormData(model);
+            model.addAttribute("batch", batch);
+            addBatchFormData(model);
 
-        return "batches/form";
+            return "batches/form";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Batch not found.");
+            return "redirect:/batches";
+        }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteBatch(@PathVariable Long id) {
-        batchService.deleteBatch(id);
+    public String deleteBatch(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            batchService.deleteBatch(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Batch deleted successfully.");
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Batch cannot be deleted because related enrollments, payments, or attendance records may exist."
+            );
+        }
 
         return "redirect:/batches";
     }

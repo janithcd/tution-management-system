@@ -14,7 +14,9 @@
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
             <div>
                 <h2 class="page-title">Class / Batch Management</h2>
-                <p class="page-subtitle">Manage O/L and A/L tuition class batches, subjects, teachers, fees, and schedules.</p>
+                <p class="page-subtitle">
+                    Manage O/L and A/L tuition class batches, subjects, teachers, fees, and schedules.
+                </p>
             </div>
 
             <div class="d-flex gap-2 flex-wrap">
@@ -24,6 +26,17 @@
                 </a>
             </div>
         </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success app-alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}"></span>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger app-alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
     </div>
 
     <!-- Filters -->
@@ -150,10 +163,7 @@
                     <td>
                         <div class="fw-bold" th:text="${batch.batchName}"></div>
                         <div class="small-muted">
-                            <i class="bi bi-clock me-1"></i>
-                            <span th:text="${batch.startTime}"></span>
-                            -
-                            <span th:text="${batch.endTime}"></span>
+                            Class batch
                         </div>
                     </td>
 
@@ -176,12 +186,15 @@
                     </td>
 
                     <td>
-                        <div class="fw-semibold" th:text="${batch.teacherName}"></div>
+                        <i class="bi bi-person-workspace me-1 text-muted"></i>
+                        <span th:text="${batch.teacherName}"></span>
                     </td>
 
                     <td>
-                        Rs.
-                        <span class="fw-bold" th:text="${batch.monthlyFee}"></span>
+                        <span class="fw-bold">
+                            Rs.
+                            <span th:text="${batch.monthlyFee}"></span>
+                        </span>
                     </td>
 
                     <td>
@@ -237,7 +250,7 @@
         No batches found.
     </div>
 
-    <!-- Better Pagination -->
+    <!-- Pagination -->
     <div th:if="${totalPages > 1}" class="pagination-wrapper mt-4">
 
         <div class="pagination-summary">
@@ -253,123 +266,65 @@
         <nav>
             <ul class="pagination app-pagination justify-content-center flex-wrap">
 
-                <!-- First Page -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=0,
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}">
+                       th:href="@{/batches(page=0,size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}">
                         <i class="bi bi-chevron-double-left"></i>
                         First
                     </a>
                 </li>
 
-                <!-- Previous Page -->
                 <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=${currentPage - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}">
+                       th:href="@{/batches(page=${currentPage - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}">
                         <i class="bi bi-chevron-left"></i>
                         Prev
                     </a>
                 </li>
 
-                <!-- First Number -->
                 <li class="page-item" th:if="${startPage > 0}">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=0,
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}">
+                       th:href="@{/batches(page=0,size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}">
                         1
                     </a>
                 </li>
 
-                <!-- Left Dots -->
                 <li class="page-item disabled" th:if="${startPage > 1}">
                     <span class="page-link page-dots">...</span>
                 </li>
 
-                <!-- Middle Numbers -->
                 <li class="page-item"
                     th:each="i : ${#numbers.sequence(startPage, endPage)}"
                     th:classappend="${i == currentPage} ? 'active'">
 
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=${i},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}"
+                       th:href="@{/batches(page=${i},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}"
                        th:text="${i + 1}">
                     </a>
                 </li>
 
-                <!-- Right Dots -->
                 <li class="page-item disabled" th:if="${endPage < totalPages - 2}">
                     <span class="page-link page-dots">...</span>
                 </li>
 
-                <!-- Last Number -->
                 <li class="page-item" th:if="${endPage < totalPages - 1}">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=${totalPages - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}"
+                       th:href="@{/batches(page=${totalPages - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}"
                        th:text="${totalPages}">
                     </a>
                 </li>
 
-                <!-- Next Page -->
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=${currentPage + 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}">
+                       th:href="@{/batches(page=${currentPage + 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}">
                         Next
                         <i class="bi bi-chevron-right"></i>
                     </a>
                 </li>
 
-                <!-- Last Page -->
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{/batches(
-                            page=${totalPages - 1},
-                            size=${pageSize},
-                            keyword=${keyword},
-                            educationLevel=${selectedEducationLevel},
-                            grade=${selectedGrade},
-                            stream=${selectedStream}
-                       )}">
+                       th:href="@{/batches(page=${totalPages - 1},size=${pageSize},keyword=${keyword},educationLevel=${selectedEducationLevel},grade=${selectedGrade},stream=${selectedStream})}">
                         Last
                         <i class="bi bi-chevron-double-right"></i>
                     </a>
